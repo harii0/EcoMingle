@@ -1,0 +1,44 @@
+# Ignore node_modules and build directories
+node_modules
+dist
+build
+logs
+
+# Ignore all files in specific directories
+backend/**/node_modules
+backend/**/dist
+backend/**/build
+backend/**/logs
+
+# Ignore specific file types
+*.min.js
+*.log
+
+
+# Ignore node_modules and build directories
+node_modules
+dist
+build
+logs
+
+# Ignore Vite specific directories and files
+frontend/dist
+frontend/.vite
+frontend/.npm
+
+# Ignore all files in specific directories
+frontend/node_modules
+frontend/logs
+
+# Ignore specific file types
+*.min.js
+*.log
+
+# Ignore configuration files
+*.config.js
+
+# Ignore certain project-specific files
+coverage
+.DS_Store
+.env
+
