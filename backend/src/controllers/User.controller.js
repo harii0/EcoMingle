@@ -2,6 +2,7 @@ import User from '../models/user.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
+import sendMail from '../utils/sendMail.js';
 //create user
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
@@ -42,7 +43,6 @@ const registerUser = asyncHandler(async (req, res) => {
       }),
     );
 });
-
 //login user
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -161,7 +161,29 @@ const updateUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { user }, 'User updated successfully'));
 });
 //forgot password
-const forgotPassword = asyncHandler(async (req, res) => {});
+const forgotPassword = asyncHandler(async (req, res) => {
+  //email through body
+  const email = req.body.email;
+  //check if email exists
+  if (!email) {
+    throw new ApiError(400, 'Please provide email');
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  //generate token
+  const resetToken = user.generateResetToken();
+  await user.save();
+  //send email with token
+  const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
+  const message = `Click here to reset your password: ${resetUrl}`;
+  sendMail(email, 'Reset Password', message);
+  return res.status(200).json(new ApiResponse(200, {}, 'Email sent'));
+});
+//reset password
+const resetPassword = asyncHandler(async (req, res) => {});
+
 export {
   registerUser,
   updateUser,
@@ -169,4 +191,5 @@ export {
   logoutUser,
   forgotPassword,
   refreshToken,
+  resetPassword,
 };
