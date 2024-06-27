@@ -146,8 +146,19 @@ const refreshToken = asyncHandler(async (req, res) => {
 });
 //update user
 const updateUser = asyncHandler(async (req, res) => {
-  //id from params
-  // user from body
+  const userId = req.user.id;
+  const { username, email, avatar } = req.body;
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  user.username = username || user.username;
+  user.email = email || user.email;
+  user.avatar = avatar || user.avatar;
+  await user.save();
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { user }, 'User updated successfully'));
 });
 //forgot password
 const forgotPassword = asyncHandler(async (req, res) => {});
