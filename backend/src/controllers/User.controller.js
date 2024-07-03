@@ -3,6 +3,7 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import sendMail from '../utils/sendMail.js';
+import bcrypt from 'bcrypt';
 //create user
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
@@ -178,11 +179,26 @@ const forgotPassword = asyncHandler(async (req, res) => {
   //send email with token
   const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
   const message = `Click here to reset your password: ${resetUrl}`;
+
   sendMail(email, 'Reset Password', message);
   return res.status(200).json(new ApiResponse(200, {}, 'Email sent'));
 });
 //reset password
-const resetPassword = asyncHandler(async (req, res) => {});
+const resetPassword = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+  const user = req.user;
+  if (!password) {
+    throw new ApiError(400, 'Please provide password');
+  }
+  const hashedPassword = bcrypt.hashSync(password, 8);
+  user.password = hashedPassword;
+  user.resetPasswordToken = null;
+  user.resetPasswordExpire = null;
+  await user.save();
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, 'Password reset successfully'));
+});
 
 export {
   registerUser,
