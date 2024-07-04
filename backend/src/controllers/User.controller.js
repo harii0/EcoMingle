@@ -185,7 +185,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 });
 //reset password
 const resetPassword = asyncHandler(async (req, res) => {
-  const { password } = req.body;
+  const password = req.body.password;
   const user = req.user;
   if (!password) {
     throw new ApiError(400, 'Please provide password');
@@ -200,8 +200,25 @@ const resetPassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, 'Password reset successfully'));
 });
 
+//protect routes
+const getUserProfile = asyncHandler(async (req, res) => {
+  const user = req.user;
+  console.log(user);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  const profile = {
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar,
+  };
+  return res.status(200).json(new ApiResponse(200, { profile }, 'Profile'));
+});
+
 export {
   registerUser,
+  getUserProfile,
   updateUser,
   loginUser,
   logoutUser,
