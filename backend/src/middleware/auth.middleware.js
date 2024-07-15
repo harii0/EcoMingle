@@ -21,6 +21,14 @@ export const verifyJwt = asyncHandler(async (req, res, next) => {
   next();
 });
 
+export const isAdmin = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+  if (user.role !== 'admin') {
+    throw new ApiError(401, 'Unauthorized');
+  }
+  next();
+});
+
 export const verifyResetToken = asyncHandler(async (req, res, next) => {
   const token = req.query.token;
   if (!token) {
