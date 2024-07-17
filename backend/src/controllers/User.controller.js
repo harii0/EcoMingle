@@ -1,9 +1,13 @@
+import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
+import uploadFile from '../utils/cloudinary.js';
 import User from '../models/user.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import sendMail from '../utils/sendMail.js';
 import bcrypt from 'bcrypt';
+
 //create user
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
@@ -148,14 +152,33 @@ const refreshToken = asyncHandler(async (req, res) => {
 //update user
 const updateUser = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { username, email, avatar } = req.body;
+  const { username, email } = req.body;
+  const avatar = req.file ? req.file.path : null;
   const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
+
+  let avatarUrl = null;
+  if (avatar) {
+    if (user.avatar) {
+      const publicId = 'uploads/' + user.avatar.split('/').pop().split('.')[0];
+      console.log(publicId);
+      await cloudinary.uploader.destroy(publicId, () => {
+        console.log('deleted');
+      });
+    }
+    const result = await uploadFile(avatar);
+    console.log(result);
+    if (result && result.secure_url) {
+      avatarUrl = result.secure_url;
+    }
+  }
+
   user.username = username || user.username;
   user.email = email || user.email;
-  user.avatar = avatar || user.avatar;
+  user.avatar = avatarUrl || user.avatar;
+
   await user.save();
   return res
     .status(200)
