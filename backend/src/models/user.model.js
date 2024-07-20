@@ -20,8 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default:
-        'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+      default: '',
     },
     password: {
       type: String,
@@ -36,6 +35,18 @@ const userSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order',
+      },
+    ],
+    cart: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Cart',
+      },
+    ],
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
       },
     ],
     refreshToken: {
@@ -53,10 +64,21 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-//hash password
+//hash password and create avatar
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 8);
+  if (!this.avatar) {
+    const avatarText = this.username.charAt(0).toUpperCase();
+    this.avatar = cloudinary.url(`text:${avatarText}`, {
+      width: 100,
+      height: 100,
+      crop: 'fit',
+      gravity: 'center',
+      color: '#ffffff',
+      background: '#000000',
+    });
+  }
   next();
 });
 //compare hashed pass
