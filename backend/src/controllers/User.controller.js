@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import uploadFile from '../utils/cloudinary.js';
 import User from '../models/user.model.js';
@@ -7,6 +6,8 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import sendMail from '../utils/sendMail.js';
 import bcrypt from 'bcrypt';
+import Order from '../models/order.model.js';
+import UserReview from '../models/review.model.js';
 
 //create user
 const registerUser = asyncHandler(async (req, res) => {
@@ -222,11 +223,9 @@ const resetPassword = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, 'Password reset successfully'));
 });
-
 //protect routes
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = req.user;
-  console.log(user);
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
@@ -235,8 +234,51 @@ const getUserProfile = asyncHandler(async (req, res) => {
     username: user.username,
     email: user.email,
     avatar: user.avatar,
+    wishlist: user.wishlist,
+    cart: user.cart,
+    orderHistory: user.orderHistory,
   };
   return res.status(200).json(new ApiResponse(200, { profile }, 'Profile'));
+});
+
+//get wishlist
+const getUserWhislist = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  if (!userId) {
+    throw new ApiError(400, 'cant find user id');
+  }
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(401, 'cant fetch user');
+  }
+  const wishlist = user.wishlist;
+  return res.status(200).json(new ApiResponse(200, { wishlist }, 'wishlist'));
+});
+//rate product
+const rateProduct = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { rating, reviewText } = req.body;
+  const userId = req.user.id;
+  if (!prodId || !rating) {
+    throw new ApiError(400, 'Missing required fields');
+  }
+  const hasPurchased = await Order.findOne({
+    userId,
+    productId,
+    status: { $in: ['delivered'] },
+  });
+  if (!hasPurchased) {
+    return null;
+  }
+  const existingReview = await UserReview.findOne({ userId, prodId });
+  let newReview;
+  if (!existingReview.rating == 0) {
+    existingReview.rating = rating;
+    newReview = await UserReview.save();
+  } else {
+    newReview = new UserReview({ productId, userId, rating, reviewText });
+    newReview = await UserReview.save();
+  }
 });
 
 export {
@@ -248,4 +290,6 @@ export {
   forgotPassword,
   refreshToken,
   resetPassword,
+  getUserWhislist,
+  rateProduct,
 };
