@@ -19,7 +19,8 @@ const registerUser = asyncHandler(async (req, res) => {
   if (userExist) {
     throw new ApiError(409, 'User already exists');
   }
-  const user = await User.create({ username, email, password });
+  const role = 'user';
+  const user = await User.create({ username, email, password, role });
   const accessToken = user.generateAccessToken();
   const refreshToken = user.generateRefreshToken();
   user.refreshToken = refreshToken;
