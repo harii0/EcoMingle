@@ -8,6 +8,8 @@ import {
   forgotPassword,
   resetPassword,
   getUserProfile,
+  getUserWhislist,
+  rateProduct,
 } from '../controllers/user.controller.js';
 import { verifyJwt } from '../middleware/auth.middleware.js';
 import { verifyResetToken } from '../middleware/auth.middleware.js';
@@ -23,7 +25,7 @@ router.post('/reset-password', verifyResetToken, resetPassword);
 router.route('/refresh_token').post(refreshToken);
 router.patch('/update', verifyJwt, upload.single('avatar'), updateUser);
 router.post('/logout', verifyJwt, logoutUser);
-//get profile not working
 router.get('/profile', verifyJwt, getUserProfile);
-
+router.get('/wishlist', verifyJwt, getUserWhislist);
+router.post('/ratings/:prodId', verifyJwt, rateProduct);
 export default router;
