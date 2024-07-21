@@ -6,6 +6,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import uploadFile from '../utils/cloudinary.js';
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
+import Cart from '../models/cart.model.js';
 
 //get all product items
 const getAllProducts = asyncHandler(async (req, res) => {
@@ -19,7 +20,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 //get product items by id
 const getProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const product = await Product.findById(id).populate('prouctItem');
+  const product = await Product.findById(id).populate('productItem');
   if (!product) {
     throw new ApiError(404, 'Product not found');
   }
@@ -27,26 +28,9 @@ const getProductById = asyncHandler(async (req, res) => {
 });
 
 const createProduct = asyncHandler(async (req, res) => {
-  const {
-    productName,
-    price,
-    description,
-    category,
-    countInStock,
-    rating,
-    discount,
-  } = req.body;
+  const { productName, price, description, category } = req.body;
 
   const imageUrls = [];
-  // for (const file of req.files) {
-  //   const { path } = file;
-  //   console.log(path);
-  //   const result = await uploadFile(path);
-  //   if (result && result.secure_url) {
-  //     imageUrls.push(result.secure_url);
-  //     fs.unlinkSync(path);
-  //   }
-  // }
   await Promise.all(
     req.files.map(async (file) => {
       const { path } = file;
@@ -71,9 +55,6 @@ const createProduct = asyncHandler(async (req, res) => {
     description,
     ProductImage: imageUrls,
     category,
-    countInStock,
-    rating,
-    discount,
   });
   if (!product) {
     throw new ApiError(400, 'Product not created');
@@ -92,15 +73,7 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 
   // Product data via req.body
-  const {
-    productName,
-    price,
-    description,
-    category,
-    countInStock,
-    rating,
-    discount,
-  } = req.body;
+  const { productName, price, description, category } = req.body;
 
   const files = req.files;
   const imageUrls = [];
@@ -145,20 +118,18 @@ const updateProduct = asyncHandler(async (req, res) => {
   product.price = price || product.price;
   product.description = description || product.description;
   product.category = category ? category.toLowerCase() : product.category;
-  product.countInStock = countInStock || product.countInStock;
-  product.rating = rating || product.rating;
-  product.discount = discount || product.discount;
-
   // Update product images if new ones were uploaded
   if (imageUrls.length > 0) {
     product.ProductImage = imageUrls;
   }
 
   await product.save();
-
+  const updatedProduct = await Product.findById(id).populate('productItem');
   return res
     .status(200)
-    .json(new ApiResponse(200, { product }, 'Product updated successfully'));
+    .json(
+      new ApiResponse(200, { updatedProduct }, 'Product updated successfully'),
+    );
 });
 
 //delete product
@@ -208,22 +179,46 @@ const addToWishlist = asyncHandler(async (req, res) => {
 //cart
 const addToCart = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { productId, quantity } = req.body;
+  const { productId } = req.body;
+  const quantity = Number.parseInt(req.body.quantity);
   const user = await User.findById(userId);
-  const alreadyAdded = user.cart.find((id) => id.toString() === productId);
-  if (alreadyAdded) {
-    let user = await User.findByIdAndUpdate(
-      userId,
-      { $inc: { [`cart.${productId}`]: quantity } },
-      { new: true },
-    );
+  console.log(user);
+  let cart = await Cart.findOne({ userId });
+  if (!cart) {
+    cart = new Cart({ userId, items: [{ productId, quantity }] });
   } else {
-    let user = await User.findByIdAndUpdate(
-      userId,
-      { $push: { cart: { productId, quantity } } },
-      { new: true },
+    const alreadyAdded = user.cart.find(
+      (item) => item.productId.toString() === productId,
+    );
+    if (alreadyAdded) {
+      alreadyAdded.quantity += quantity;
+    } else {
+      cart.items.push({ productId, quantity });
+    }
+  }
+  await cart.save();
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { cart: cart._id },
+    { new: true },
+  ).populate('cart');
+  return res.json(
+    new ApiResponse(200, { updatedUser }, 'Product added to cart'),
+  );
+});
+const removeFromCart = asyncHandler(async (req, res) => {
+  const { productId } = req.body;
+  const userId = req.user.id;
+  //find the cart
+  let cart = Cart.findOne({ userId });
+  if (cart) {
+    cart.items = cart.items.filter(
+      (item) => item.productId.toString() != productId,
     );
   }
+  const user = await User.findById(userId).populate('cart');
+  //return the populated object
+  return res.json(new ApiResponse(200, { user }, 'removed from cart'));
 });
 
 export {
@@ -234,4 +229,6 @@ export {
   deleteProduct,
   getProductsByCategory,
   addToWishlist,
+  addToCart,
+  removeFromCart,
 };
