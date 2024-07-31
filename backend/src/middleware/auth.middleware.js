@@ -12,7 +12,27 @@ export const verifyJwt = asyncHandler(async (req, res, next) => {
   if (!token) {
     throw new ApiError(401, 'Unauthorized ');
   }
-  const payload = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
+
+  const payload = jwt.verify(
+    token,
+    process.env.JWT_ACCESS_TOKEN,
+    function (err, decoded) {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          throw new ApiError(401, {
+            errorCode: 'TOKEN_EXPIRED',
+            expiredAt: err.expiredAt,
+          });
+        }
+        throw new ApiError(403, 'Invalid Token');
+      }
+      return decoded;
+    },
+  );
+
+  if (!payload) {
+    throw new ApiError(401, 'Invalid Token');
+  }
   const user = await User.findById(payload.id);
   if (!user) {
     throw new ApiError(401, 'Invalid Token');
