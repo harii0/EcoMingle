@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { v2 as cloudinary } from 'cloudinary';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
@@ -90,6 +91,7 @@ userSchema.methods.comparePassword = async function (password) {
 
 userSchema.methods.generateAccessToken = function () {
   try {
+    console.log('JWT_ACCESS_EXPIRE:', process.env.JWT_ACCESS_TOKEN);
     return jwt.sign(
       {
         id: this._id,
@@ -98,16 +100,16 @@ userSchema.methods.generateAccessToken = function () {
         username: this.username,
       },
       process.env.JWT_ACCESS_TOKEN,
-      { expiresIn: process.env.JWT_ACCESS_EXPIRE },
+      { expiresIn: '15m' },
     );
   } catch (error) {
-    console.log(error);
+    console.log('error', error);
   }
 };
 userSchema.methods.generateRefreshToken = function () {
   try {
     return jwt.sign({ id: this._id }, process.env.JWT_REFRESH_TOKEN, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRE,
+      expiresIn: '14d',
     });
   } catch (error) {
     console.log(error);
