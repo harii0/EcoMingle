@@ -13,7 +13,7 @@ app.use(express.static('public'));
 app.use(cookieParser());
 //routes
 app.use('/api/user', userRoute);
-app.use('/api/', productRoute);
+app.use('/api/product', productRoute);
 //error handler
 app.use((err, req, res, next) => {
   if (err instanceof ApiError) {
