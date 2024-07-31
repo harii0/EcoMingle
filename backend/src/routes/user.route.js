@@ -22,7 +22,7 @@ router.post('/login', loginUser);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', verifyResetToken, resetPassword);
 //protect routes
-router.route('/refresh_token').post(refreshToken);
+router.post('/refresh_token', refreshToken);
 router.patch('/update', verifyJwt, upload.single('avatar'), updateUser);
 router.post('/logout', verifyJwt, logoutUser);
 router.get('/profile', verifyJwt, getUserProfile);
