@@ -1,4 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
+import 'dotenv/config';
+import jwt from 'jsonwebtoken';
 import uploadFile from '../utils/cloudinary.js';
 import User from '../models/user.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
@@ -8,47 +10,55 @@ import sendMail from '../utils/sendMail.js';
 import bcrypt from 'bcrypt';
 import Order from '../models/order.model.js';
 import UserReview from '../models/review.model.js';
+import userSchema from '../validators/userSchema.js';
 
 //create user
 const registerUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
-  if ([username, email, password].some((field) => !field?.trim())) {
-    throw new ApiError(400, 'Please add all fields');
+  const { error, value } = userSchema.validate(req.body);
+  if (error) {
+    throw new ApiError(400, error.details[0].message);
   }
+  const { username, email, password } = value;
+
   const userExist = await User.findOne({ email });
+
   if (userExist) {
     throw new ApiError(409, 'User already exists');
   }
-  const role = 'user';
-  const user = await User.create({ username, email, password, role });
-  const accessToken = user.generateAccessToken();
-  const refreshToken = user.generateRefreshToken();
-  user.refreshToken = refreshToken;
-  await user.save();
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-  const refreshOptions = {
-    httpOnly: true,
-    secure: true,
-    path: '/refresh_token',
-  };
-  return res
-    .status(201)
-    .cookie('accessToken', accessToken, options)
-    .cookie('refreshToken', refreshToken, refreshOptions)
-    .json(
-      new ApiResponse(201, {
-        user: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          avatar: user.avatar,
-        },
-      }),
-    );
+
+  try {
+    const user = await User.create({ username, email, password });
+
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+    user.refreshToken = refreshToken;
+    await user.save();
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+    const refreshOptions = {
+      httpOnly: true,
+      secure: true,
+    };
+    return res
+      .status(201)
+      .cookie('accessToken', accessToken, options)
+      .cookie('refreshToken', refreshToken, refreshOptions)
+      .json(
+        new ApiResponse(201, {
+          user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar,
+          },
+        }),
+      );
+  } catch (error) {
+    throw new ApiError(500, 'Internal server error');
+  }
 });
 //login user
 const loginUser = asyncHandler(async (req, res) => {
@@ -75,7 +85,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const refreshOptions = {
     httpOnly: true,
     secure: true,
-    path: '/refresh_token',
+    // path: '/refresh_token',
   };
   return res
     .status(200)
@@ -108,7 +118,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     },
     { new: true },
   );
-  console.log(loggedOutUser);
+
   const options = {
     httpOnly: true,
   };
@@ -124,32 +134,37 @@ const refreshToken = asyncHandler(async (req, res) => {
   if (!userRefreshToken) {
     throw new ApiError(401, 'Please provide refresh token');
   }
-  const payload = jwt.verify(userRefreshToken, process.env.JWT_REFRESH_TOKEN);
-  if (!payload) {
-    throw new ApiError(401, 'Invalid refresh token');
+
+  try {
+    let payload = jwt.verify(userRefreshToken, process.env.JWT_REFRESH_TOKEN);
+    const user = await User.findById(payload.id);
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+    if (user?.refreshToken !== userRefreshToken) {
+      throw new ApiError(401, 'Invalid refresh token or token mismatch');
+    }
+    const accessToken = user.generateAccessToken();
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+    const refreshToken = user.generateRefreshToken();
+    const refreshOptions = {
+      httpOnly: true,
+      secure: true,
+      // path: '/refresh_token',
+    };
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+    return res
+      .status(200)
+      .cookie('accessToken', accessToken, options)
+      .cookie('refreshToken', refreshToken, refreshOptions)
+      .json(new ApiResponse(200, { accessToken }, 'Refreshed successfully'));
+  } catch (error) {
+    throw new ApiError(401, 'Invalid refresh token Please Log in again');
   }
-  const user = await User.findById(payload._id);
-  if (!user) {
-    throw new ApiError(404, 'User not found');
-  }
-  if (user?.refreshToken !== userRefreshToken) {
-    throw new ApiError(401, 'Invalid refresh token');
-  }
-  const accessToken = user.generateAccessToken();
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-  const refreshOptions = {
-    httpOnly: true,
-    secure: true,
-    path: '/refresh_token',
-  };
-  return res
-    .status(200)
-    .cookie('accessToken', accessToken, options)
-    .cookie('refreshToken', user.refreshToken, refreshOptions)
-    .json(new ApiResponse(200, { accessToken }, 'Refreshed successfully'));
 });
 //update user
 const updateUser = asyncHandler(async (req, res) => {
@@ -165,13 +180,13 @@ const updateUser = asyncHandler(async (req, res) => {
   if (avatar) {
     if (user.avatar) {
       const publicId = 'uploads/' + user.avatar.split('/').pop().split('.')[0];
-      console.log(publicId);
+
       await cloudinary.uploader.destroy(publicId, () => {
         console.log('deleted');
       });
     }
     const result = await uploadFile(avatar);
-    console.log(result);
+
     if (result && result.secure_url) {
       avatarUrl = result.secure_url;
     }
