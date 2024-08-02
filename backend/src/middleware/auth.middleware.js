@@ -26,6 +26,7 @@ export const verifyJwt = asyncHandler(async (req, res, next) => {
         }
         throw new ApiError(403, 'Invalid Token');
       }
+
       return decoded;
     },
   );
@@ -33,11 +34,8 @@ export const verifyJwt = asyncHandler(async (req, res, next) => {
   if (!payload) {
     throw new ApiError(401, 'Invalid Token');
   }
-  const user = await User.findById(payload.id);
-  if (!user) {
-    throw new ApiError(401, 'Invalid Token');
-  }
-  req.user = user;
+
+  req.user = payload;
   next();
 });
 
