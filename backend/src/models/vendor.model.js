@@ -1,30 +1,46 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import 'dotenv/config';
+// File Schema
+const fileSchema = new mongoose.Schema(
+  {
+    fileName: { type: String, required: true },
+    fileUrl: { type: String, required: true },
+    fileSize: { type: Number, required: true },
+    fileType: { type: String, required: true },
+  },
+  { _id: false },
+);
+const locationSchema = new mongoose.Schema(
+  {
+    address: { type: String, trim: true },
+    city: { type: String, trim: true },
+    state: { type: String, trim: true },
+    country: { type: String, trim: true },
+    postalCode: { type: String, trim: true },
+  },
+  { _id: false },
+);
+
+// Vendor Schema
 const vendorSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    trim: true,
   },
+  email: {
+    type: String,
+    required: true,
+  },
+
   description: {
     type: String,
   },
-  contact: {
-    type: {
-      email: { type: String, trim: true },
-      phone: { type: String, trim: true },
-    },
-    required: true,
+  phone: {
+    type: String,
   },
-  location: {
-    type: {
-      address: { type: String, trim: true },
-      city: { type: String, trim: true },
-      state: { type: String, trim: true },
-      country: { type: String, trim: true },
-      postalCode: { type: String, trim: true },
-    },
-  },
+  location: locationSchema,
   website: {
     type: String,
     trim: true,
@@ -46,12 +62,6 @@ const vendorSchema = new mongoose.Schema({
   categories: [
     {
       type: String,
-      enum: [String],
-    },
-  ],
-  ethicsCertifications: [
-    {
-      type: String,
     },
   ],
   password: {
@@ -67,6 +77,10 @@ const vendorSchema = new mongoose.Schema({
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending',
   },
+  files: [fileSchema], // Integrated fileSchema
+  refreshToken: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -77,38 +91,41 @@ const vendorSchema = new mongoose.Schema({
   },
 });
 
-vendorSchema.pre('save', function (next) {
-  if (!this.isModified('password')) {
-    return next();
-  }
-  this.password = bcrypt.hashSync(this.password, 8);
-  next();
-  // Trim whitespace from string properties before saving
-  this.name = this.name.trim();
-  if (this.description) {
-    this.description = this.description.trim();
-  }
-  if (this.contact.email) {
-    this.contact.email = this.contact.email.trim();
-  }
-  if (this.contact.phone) {
-    this.contact.phone = this.contact.phone.trim();
-  }
-  if (this.location) {
-    this.location.address = this.location.address?.trim();
-    this.location.city = this.location.city?.trim();
-    this.location.state = this.location.state?.trim();
-    this.location.country = this.location.country?.trim();
-    this.location.postalCode = this.location.postalCode?.trim();
-  }
-  if (this.website) {
-    this.website = this.website.trim();
-  }
+vendorSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 8);
+
   next();
 });
-
+// Compare Password Method
 vendorSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compareSync(password, this.password);
+};
+//tokens
+vendorSchema.methods.generateAccessToken = function () {
+  try {
+    return jwt.sign(
+      {
+        id: this._id,
+        role: this.role,
+        email: this.email,
+        username: this.username,
+      },
+      process.env.JWT_ACCESS_TOKEN,
+      { expiresIn: '15m' },
+    );
+  } catch (error) {
+    console.log('error', error);
+  }
+};
+vendorSchema.methods.generateRefreshToken = function () {
+  try {
+    return jwt.sign({ id: this._id }, process.env.JWT_REFRESH_TOKEN, {
+      expiresIn: '14d',
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const Vendor = mongoose.model('Vendor', vendorSchema);
