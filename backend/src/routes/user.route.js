@@ -14,7 +14,12 @@ import {
 import { verifyJwt } from '../middleware/auth.middleware.js';
 import { verifyResetToken } from '../middleware/auth.middleware.js';
 import { upload } from '../middleware/multer.middleware.js';
-
+import {
+  getProductsByCategory,
+  addToWishlist,
+  addToCart,
+  removeFromCart,
+} from '../controllers/product.controller.js';
 const router = Router();
 
 router.post('/register', registerUser);
@@ -28,4 +33,10 @@ router.post('/logout', verifyJwt, logoutUser);
 router.get('/profile', verifyJwt, getUserProfile);
 router.get('/wishlist', verifyJwt, getUserWhislist);
 router.post('/ratings/:prodId', verifyJwt, rateProduct);
+
+//products
+router.get('/category', verifyJwt, getProductsByCategory);
+router.put('/wishlist', verifyJwt, addToWishlist);
+router.put('/cart', verifyJwt, addToCart);
+router.delete('/cart', verifyJwt, removeFromCart);
 export default router;
