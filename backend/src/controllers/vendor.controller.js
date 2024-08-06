@@ -111,6 +111,9 @@ const vendorLogin = asyncHandler(async (req, res) => {
   if (!vendor) {
     throw new ApiError(404, 'User not found');
   }
+  if (vendor.status === 'pending') {
+    throw new ApiError(401, 'Please wait for admin approval');
+  }
   const isMatch = await vendor.comparePassword(password);
   if (!isMatch) {
     throw new ApiError(401, 'Invalid credentials');
