@@ -1,16 +1,16 @@
 import { v2 as cloudinary } from 'cloudinary';
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
-import uploadFile from '../utils/cloudinary.js';
+import uploadFile from '../../../utils/cloudinary.js';
 import User from '../models/user.model.js';
-import asyncHandler from '../utils/asyncHandler.js';
-import { ApiError } from '../utils/ApiError.js';
-import { ApiResponse } from '../utils/ApiResponse.js';
-import sendMail from '../utils/sendMail.js';
+import asyncHandler from '../../../utils/asyncHandler.js';
+import { ApiError } from '../../../utils/ApiError.js';
+import { ApiResponse } from '../../../utils/ApiResponse.js';
+import sendMail from '../../../utils/sendMail.js';
 import bcrypt from 'bcrypt';
-import Order from '../models/order.model.js';
+import Order from '../../order/models/order.model.js';
 import UserReview from '../models/review.model.js';
-import userSchema from '../validators/userSchema.js';
+import userSchema from '../../../validators/userSchema.js';
 
 //create user
 const registerUser = asyncHandler(async (req, res) => {
