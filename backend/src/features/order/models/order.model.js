@@ -30,7 +30,7 @@ const orderSchema = new mongoose.Schema(
     totalPrice: { type: Number },
     paymentStatus: {
       type: String,
-      enum: ['unpaid', 'paid', 'failed'],
+      enum: ['unpaid', 'paid', 'failed', 'refunded'],
       default: 'unpaid',
     },
     quantity: {
