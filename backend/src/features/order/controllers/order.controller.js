@@ -1,12 +1,17 @@
+import 'dotenv/config';
+import Stripe from 'stripe';
+import mongoose from 'mongoose';
 import Order from '../models/order.model.js';
 import Product from '../../product/models/product.model.js';
-import stripe from 'stripe';
 import asyncHandler from '../../../utils/asyncHandler.js';
-import { reduceQuantity } from '../../../utils/feature.js';
+import { reduceQuantity, increaseQuantity } from '../../../utils/feature.js';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createOrder = asyncHandler(async (req, res) => {
   try {
-    const { pId, quantity, shippingAddress1, city, zip } = req.body;
+    const { pId, quantity, shippingAddress1, city, zip, country, phone } =
+      req.body;
     const userId = req.user.id;
 
     const product = await Product.findById(pId);
@@ -15,15 +20,16 @@ export const createOrder = asyncHandler(async (req, res) => {
     const totalPrice = product.price * quantity;
 
     const order = new Order({
-      userId,
-      pId,
+      user: userId,
+      product: pId,
       shippingAddress1,
       city,
       zip,
       quantity,
       totalPrice,
       status: 'pending',
-      paymentStatus,
+      phone,
+      country,
     });
 
     const newOrder = await order.save();
@@ -32,6 +38,8 @@ export const createOrder = asyncHandler(async (req, res) => {
     }
     res.status(201).json(order);
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({ message: 'Server error', error });
   }
 });
@@ -47,11 +55,13 @@ export const processPayment = async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: order.totalPrice * 100, // Stripe works with cents
       currency: 'usd',
+      payment_method: 'pm_card_visa',
       metadata: { orderId: order._id.toString() },
     });
 
-    res.status(200).json({ clientSecret: paymentIntent.client_secret });
+    res.status(200).json(paymentIntent);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
@@ -59,9 +69,11 @@ export const processPayment = async (req, res) => {
 // Get all orders for the authenticated user
 export const getUserOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ userId: req.user.id }).exec();
+    const userId = new mongoose.Types.ObjectId(req.user.id);
+    const orders = await Order.find({ user: userId });
     res.status(200).json(orders);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
@@ -69,10 +81,72 @@ export const getUserOrders = async (req, res) => {
 // Get a specific order by ID
 export const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.orderId).exec();
+    const order = await Order.findById(req.params.orderId);
+    const productDetails = await Product.findById(order.product);
+    const orderDetails = { ...order._doc, productDetails };
     if (!order) return res.status(404).json({ message: 'Order not found' });
-    res.status(200).json(order);
+    res.status(200).json(orderDetails);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
+export const confirmPayment = asyncHandler(async (req, res) => {
+  try {
+    const { paymentIntentId, orderId } = req.body;
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    // Retrieve the Payment Intent to confirm its status
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    const payment = await stripe.paymentIntents.confirm(paymentIntent.id, {
+      payment_method: 'pm_card_visa',
+      return_url: 'https://api.stripe.com/',
+    });
+    if (payment.status === 'succeeded') {
+      order.paymentStatus = 'paid';
+      order.status = 'processing';
+      await order.save();
+
+      res.status(200).json({ message: 'Payment confirmed and order updated' });
+    } else {
+      res
+        .status(400)
+        .json({ message: 'Payment not successful. Please try again.' });
+    }
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+export const cancelOrder = asyncHandler(async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    // Check if order is already paid
+    if (order.paymentStatus === 'paid') {
+      // Refund payment
+      await stripe.refunds.create({
+        payment_intent: order.paymentIntentId, // The ID of the payment intent
+        amount: order.totalPrice * 100, // amount in cents
+        reason: 'requested_by_customer',
+      });
+    }
+    //restock the product
+    increaseQuantity(order.product, order.quantity);
+    // Update order status
+    order.status = 'cancelled';
+    order.paymentStatus = 'refunded';
+    // or 'cancelled' depending on your logic
+    await order.save();
+
+    res.status(200).json({ message: 'Order cancelled and refunded' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
