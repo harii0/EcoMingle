@@ -8,6 +8,30 @@ import { reduceQuantity, increaseQuantity } from '../../../utils/feature.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+export const getUserOrders = async (req, res) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.user.id);
+    const orders = await Order.find({ user: userId });
+    res.status(200).json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// Get a specific order by ID
+export const getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.orderId);
+    const productDetails = await Product.findById(order.product);
+    const orderDetails = { ...order._doc, productDetails };
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    res.status(200).json(orderDetails);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
 export const createOrder = asyncHandler(async (req, res) => {
   try {
     const { pId, quantity, shippingAddress1, city, zip, country, phone } =
@@ -48,52 +72,28 @@ export const createOrder = asyncHandler(async (req, res) => {
 export const processPayment = async (req, res) => {
   try {
     const { orderId } = req.params;
+    const { paymentMethod, currency } = req.body;
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
-    // Create a payment intent with Stripe
+    //  a payment intent with Stripe
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: order.totalPrice * 100, // Stripe works with cents
-      currency: 'usd',
-      payment_method: 'pm_card_visa',
+      amount: order.totalPrice * 100,
+      currency: currency || 'usd',
+      payment_method: [paymentMethod],
       metadata: { orderId: order._id.toString() },
     });
 
-    res.status(200).json(paymentIntent);
+    res.status(200).json(paymentIntent.client_secret);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
-// Get all orders for the authenticated user
-export const getUserOrders = async (req, res) => {
-  try {
-    const userId = new mongoose.Types.ObjectId(req.user.id);
-    const orders = await Order.find({ user: userId });
-    res.status(200).json(orders);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
-// Get a specific order by ID
-export const getOrderById = async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.orderId);
-    const productDetails = await Product.findById(order.product);
-    const orderDetails = { ...order._doc, productDetails };
-    if (!order) return res.status(404).json({ message: 'Order not found' });
-    res.status(200).json(orderDetails);
-  } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
 };
 
 export const confirmPayment = asyncHandler(async (req, res) => {
   try {
-    const { paymentIntentId, orderId } = req.body;
+    const { paymentIntentId, orderId, paymentMethod } = req.body;
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
@@ -101,8 +101,7 @@ export const confirmPayment = asyncHandler(async (req, res) => {
 
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
     const payment = await stripe.paymentIntents.confirm(paymentIntent.id, {
-      payment_method: 'pm_card_visa',
-      return_url: 'https://api.stripe.com/',
+      payment_method: paymentMethod,
     });
     if (payment.status === 'succeeded') {
       order.paymentStatus = 'paid';
