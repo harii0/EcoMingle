@@ -9,7 +9,7 @@ import { ApiResponse } from '../../../utils/ApiResponse.js';
 import sendMail from '../../../utils/sendMail.js';
 import bcrypt from 'bcrypt';
 import Order from '../../order/models/order.model.js';
-import UserReview from '../models/review.model.js';
+import UserReview from '../../review/models/review.model.js';
 import userSchema from '../../../validators/userSchema.js';
 
 //create user
@@ -272,29 +272,47 @@ const getUserWhislist = asyncHandler(async (req, res) => {
 });
 //rate product
 const rateProduct = asyncHandler(async (req, res) => {
-  const { productId } = req.params;
-  const { rating, reviewText } = req.body;
+  const { pId } = req.params;
+  const { rating, review } = req.body;
   const userId = req.user.id;
-  if (!prodId || !rating) {
+  if (!pId || !rating) {
     throw new ApiError(400, 'Missing required fields');
   }
+  console.log(rating, review);
+
   const hasPurchased = await Order.findOne({
-    userId,
-    productId,
+    user: userId,
+    product: pId,
     status: { $in: ['delivered'] },
   });
+
   if (!hasPurchased) {
-    return null;
+    throw new ApiError(401, 'User has not purchased this product');
   }
-  const existingReview = await UserReview.findOne({ userId, prodId });
+  const existingReview = await UserReview.findOne({ userId, productId: pId });
+  console.log(existingReview);
+
   let newReview;
-  if (!existingReview.rating == 0) {
+  if (existingReview) {
     existingReview.rating = rating;
+    existingReview.review.reviewText = reviewText;
+    existingReview.review.reviewTitle = reviewTitle;
     newReview = await UserReview.save();
   } else {
-    newReview = new UserReview({ productId, userId, rating, reviewText });
-    newReview = await UserReview.save();
+    const reviewInstance = new UserReview({
+      productId: pId,
+      userId: userId,
+      rating: rating,
+      review: {
+        reviewText: review.reviewText,
+        reviewTitle: review.reviewTitle,
+      },
+    });
+    newReview = await reviewInstance.save();
   }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { review: newReview }, 'Review saved'));
 });
 
 export {
