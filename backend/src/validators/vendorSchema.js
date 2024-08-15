@@ -1,26 +1,24 @@
-import { usernameSchema, emailSchema, passwordSchema } from './commonSchema.js';
+import Joi from 'joi';
+
+const locationSchema = Joi.object({
+  address: Joi.string().optional().trim(),
+  city: Joi.string().optional().trim(),
+  state: Joi.string().optional().trim(),
+  country: Joi.string().optional().trim(),
+  postalCode: Joi.string().optional().trim(),
+});
 
 const vendorSchema = Joi.object({
-  username: usernameSchema,
-  password: passwordSchema,
-  email: emailSchema,
-  description: Joi.string(),
-  contact: Joi.object({
-    email: emailSchema,
-    phone: Joi.string(),
-  }),
-  location: Joi.object({
-    address: Joi.string(),
-    city: Joi.string(),
-    state: Joi.string(),
-    country: Joi.string(),
-    postalCode: Joi.string(),
-  }),
-  website: Joi.string(),
-  products: Joi.array().items(Joi.objectId()),
-  gstin: Joi.string(),
-  pan: Joi.string(),
-  categories: Joi.array().items(Joi.string()),
+  username: Joi.string().min(3).required().trim(),
+  email: Joi.string().email().required().trim(),
+  password: Joi.string().min(6).required().trim(),
+  description: Joi.string().optional().trim(),
+  phone: Joi.string().optional().trim(),
+  location: locationSchema,
+  website: Joi.string().uri().optional().trim(),
+  gstin: Joi.string().optional().trim(),
+  pan: Joi.string().optional().trim(),
+  categories: Joi.array().items(Joi.string().trim()).optional(),
 });
 
 export default vendorSchema;
