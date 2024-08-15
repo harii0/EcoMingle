@@ -1,9 +1,8 @@
 import Joi from 'joi';
-import { usernameSchema, emailSchema, passwordSchema } from './commonSchema.js';
 const userSchema = Joi.object({
-  username: usernameSchema,
-  password: passwordSchema,
-  email: emailSchema,
+  username: Joi.string().min(3).max(30).required(),
+  password: Joi.string().min(6).required(),
+  email: Joi.string().email().required(),
 });
 
 export default userSchema;
