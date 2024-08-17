@@ -13,6 +13,9 @@ const theme = createTheme({
       secondary: '#5C5F6A',
     },
   },
+  typography: {
+    fontFamily: 'Poppins, sans-serif',
+  },
 });
 
 export default theme;
