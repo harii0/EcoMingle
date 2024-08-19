@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import Form from '../user/components/Form';
+import Form from './components/Form';
 import { useState } from 'react';
 import { login } from './api';
 
