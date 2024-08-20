@@ -178,8 +178,13 @@ const Form = ({
             hovercolor={'transparent'}
             width={'100%'}
             fontSize={'13px'}
+            onClick={() => {
+              variant === 'Login' ? navigate('/register') : navigate('/login');
+            }}
           >
-            Don&apos;t have an account? Sign Up
+            {variant === 'Login'
+              ? `Don't have an account? Sign Up`
+              : 'Already have an account? Sign In'}
           </PrimaryButton>
         </Typography>
       </Box>
