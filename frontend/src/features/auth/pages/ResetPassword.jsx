@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
-import Form from './components/Form';
+import Form from '../components/Form';
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { resetPassword } from './api';
+import { resetPassword } from '../api';
 
 const ResetPassword = () => {
   const location = useLocation();
