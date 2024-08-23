@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { useState } from 'react';
-import { forgetPassword } from './api';
-import Form from './components/Form';
+import { forgetPassword } from '../api';
+import Form from '../components/Form';
 const ForgetPassword = () => {
   // Define form state
   const [values, setValues] = useState({
