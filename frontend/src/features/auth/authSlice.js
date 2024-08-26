@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { login, logout, register } from './api';
 
 const initialState = {
-  user: null,
+  user: localStorage.getItem('user') || null,
   isAuthenticated: false,
   status: 'idle',
   error: null,
@@ -28,6 +28,7 @@ export const loginUser = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await login(data);
+      localStorage.setItem('user', response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -40,6 +41,7 @@ export const logoutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await logout();
+      localStorage.removeItem('user');
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
