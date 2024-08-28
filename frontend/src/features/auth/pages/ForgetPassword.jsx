@@ -1,14 +1,10 @@
 import { Box } from '@mui/material';
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { forgetPassword } from '../api';
 import Form from '../components/Form';
 const ForgetPassword = () => {
-  // Define form state
-  const [values, setValues] = useState({
-    email: '',
-  });
-  const [error, setError] = useState({ error: false, message: null });
-
+  const dispatch = useDispatch();
+  const { error, loading, helperText } = useSelector((state) => state.auth);
   // Define form fields
   const fields = [
     {
@@ -17,23 +13,9 @@ const ForgetPassword = () => {
       placeholder: 'Enter your email',
     },
   ];
-  const handleChange = (e) => {
-    setValues({ ...values, [e.target.name]: e.target.value });
-    if (error.error) {
-      setError({
-        error: false,
-        message: null,
-      });
-    }
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await forgetPassword(values);
-      console.log(response);
-    } catch (error) {
-      setError(error.message);
-    }
+
+  const onSubmit = async (data) => {
+    dispatch(forgetPassword(data));
   };
 
   return (
@@ -51,11 +33,11 @@ const ForgetPassword = () => {
     >
       <Form
         variant={'Forgot Password'}
+        helperText={helperText}
         fields={fields}
-        error={error.error}
-        helperText={error.message}
-        handleSubmit={handleSubmit}
-        handleChange={handleChange}
+        error={error}
+        loading={loading}
+        onSubmit={onSubmit}
       />
     </Box>
   );

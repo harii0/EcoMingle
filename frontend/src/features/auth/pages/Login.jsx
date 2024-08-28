@@ -1,16 +1,16 @@
 import { Box } from '@mui/material';
-import Form from '../components/Form';
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import Form from '../components/Form';
 import { loginUser } from '../authSlice';
+import { useEffect } from 'react';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
-  const [values, setValues] = useState({});
-  const { loading, error, helperText, user } = useSelector(
-    (state) => state.auth,
-  );
-  console.log('user', user);
+  const navigate = useNavigate();
+
+  const { error, loading, helperText } = useSelector((state) => state.auth);
+
   // Define form fields
   const fields = [
     {
@@ -25,15 +25,14 @@ const LoginForm = () => {
     },
   ];
 
-  const handleChange = (e) => {
-    setValues({ ...values, [e.target.name]: e.target.value });
+  const onSubmit = async (data) => {
+    dispatch(loginUser(data));
   };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (values.email && values.password) {
-      dispatch(loginUser(values));
+  useEffect(() => {
+    if (error == false) {
+      navigate('/dashboard');
     }
-  };
+  }, [error, navigate]);
 
   return (
     <Box
@@ -49,12 +48,11 @@ const LoginForm = () => {
       }}
     >
       <Form
-        error={Boolean(error)}
-        helperText={helperText}
         variant={'Login'}
+        error={error}
+        helperText={helperText}
         fields={fields}
-        handleSubmit={handleSubmit}
-        handleChange={handleChange}
+        onSubmit={onSubmit}
         loading={loading}
       />
     </Box>

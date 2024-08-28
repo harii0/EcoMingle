@@ -1,20 +1,12 @@
 import { Box } from '@mui/material';
 import Form from '../components/Form';
-import { useState } from 'react';
-import { register } from '../api';
+import { registerUser } from '../authSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Register = () => {
+  const dispatch = useDispatch();
+  const { error, loading, helperText } = useSelector((state) => state.auth);
   // Define form state
-  const [values, setValues] = useState({
-    username: '',
-    email: '',
-    password: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState({
-    error: false,
-    message: null,
-  });
 
   // Define form fields
   const fields = [
@@ -34,32 +26,10 @@ const Register = () => {
       placeholder: 'Enter your password',
     },
   ];
-  const handleChange = (e) => {
-    setValues({ ...values, [e.target.name]: e.target.value });
-    if (error.error) {
-      setError({
-        error: false,
-        message: null,
-      });
-    }
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      const response = await register(values);
-      console.log('response', response.data);
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      setError({
-        error: true,
-        message: err.response?.data?.message || 'An error occurred',
-      });
-      console.log('err', err);
-    }
-  };
 
+  const onSubmit = async (data) => {
+    dispatch(registerUser(data));
+  };
   return (
     <Box
       sx={{
@@ -74,12 +44,11 @@ const Register = () => {
       }}
     >
       <Form
-        error={error.error}
-        helperText={error.message}
         variant={'Create Account'}
+        error={error}
+        helperText={helperText}
         fields={fields}
-        handleSubmit={handleSubmit}
-        handleChange={handleChange}
+        onSubmit={onSubmit}
         loading={loading}
       />
     </Box>

@@ -1,23 +1,14 @@
 import { Box } from '@mui/material';
-import Form from '../components/Form';
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { resetPassword } from '../api';
+import Form from '../components/Form';
 
 const ResetPassword = () => {
+  const dispatch = useDispatch();
+  const { error, loading } = useSelector((state) => state.auth);
   const location = useLocation();
   const token = new URLSearchParams(location.search).get('token');
-
-  // Define form state
-  const [values, setValues] = useState({
-    password: '',
-    confirmpassword: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState({
-    error: false,
-    message: null,
-  });
 
   // Define form fields
   const fields = [
@@ -32,43 +23,9 @@ const ResetPassword = () => {
       placeholder: 'Enter your password',
     },
   ];
-  const handleChange = (e) => {
-    setValues({ ...values, [e.target.name]: e.target.value });
-    if (error.error) {
-      setError({
-        error: false,
-        message: null,
-      });
-    }
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (values.password !== values.confirmpassword) {
-      setError({
-        error: true,
-        message: 'Passwords do not match',
-      });
-      return;
-    } else {
-      setError({
-        error: false,
-        message: null,
-      });
-    }
 
-    try {
-      setLoading(true);
-      const response = await resetPassword({ ...values }, token);
-      console.log('response', response.data);
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      setError({
-        error: true,
-        message: err.response?.data?.message,
-      });
-      console.log('err', err);
-    }
+  const onSubmit = async (data) => {
+    dispatch(resetPassword(data, token));
   };
 
   return (
@@ -85,12 +42,10 @@ const ResetPassword = () => {
       }}
     >
       <Form
-        error={error.error}
-        helperText={error.message}
         variant={'ResetPassword'}
+        error={error}
         fields={fields}
-        handleSubmit={handleSubmit}
-        handleChange={handleChange}
+        onSubmit={onSubmit}
         loading={loading}
       />
     </Box>
