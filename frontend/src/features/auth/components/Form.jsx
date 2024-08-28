@@ -1,4 +1,6 @@
 /* eslint-disable react/prop-types */
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import {
   Box,
   TextField,
@@ -8,23 +10,37 @@ import {
   IconButton,
   Divider,
   Chip,
+  CircularProgress,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import CircularProgress from '@mui/material/CircularProgress';
-import GoogleIcon from '@mui/icons-material/Google';
 import PrimaryButton from '../../../components/button/Button';
 import { useNavigate } from 'react-router-dom';
 
-const Form = ({
-  fields,
-  handleSubmit,
-  handleChange,
-  variant,
-  error,
-  helperText,
-  loading,
-}) => {
+const Form = ({ fields, onSubmit, variant, error, loading, helperText }) => {
   const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setFocus,
+    setError,
+  } = useForm();
+
+  useEffect(() => {
+    if (error) {
+      setError('root', { type: 'required', message: helperText });
+    }
+  }, [error, setError]);
+
+  const onSubmitWithValidation = (data) => {
+    onSubmit(data);
+  };
+
+  const onError = (errors) => {
+    const firstError = Object.keys(errors)[0];
+    setFocus(firstError);
+  };
+
   return (
     <Box
       sx={{
@@ -39,7 +55,7 @@ const Form = ({
     >
       <Box
         component={'form'}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmitWithValidation, onError)}
         sx={{
           width: '100%',
           maxWidth: 350,
@@ -65,28 +81,53 @@ const Form = ({
         <Typography variant="h6" gutterBottom>
           {variant}
         </Typography>
+
         <Grid container spacing={1.5}>
           {fields.map((field, index) => (
             <Grid item xs={12} key={index}>
-              <TextField
-                onChange={handleChange}
+              <Controller
                 name={field.label.toLowerCase()}
-                error={error}
-                helperText={helperText}
-                fullWidth
-                margin="dense"
-                size="small"
-                label={field.label}
-                variant="standard"
-                type={field.type}
-                placeholder={field.placeholder}
-                InputLabelProps={{ sx: { fontSize: '14px' } }}
-                InputProps={{
-                  sx: { fontSize: '14px', py: 0.5 },
-                }}
+                control={control}
+                defaultValue=""
+                rules={{ required: `${field.label} is required` }}
+                render={({ field: { onChange, value, ref } }) => (
+                  <TextField
+                    onChange={onChange}
+                    value={value}
+                    inputRef={ref}
+                    fullWidth
+                    margin="dense"
+                    size="small"
+                    label={field.label}
+                    variant="standard"
+                    type={field.type}
+                    placeholder={field.placeholder}
+                    error={!!errors[field.label.toLowerCase()]}
+                    helperText={errors[field.label.toLowerCase()]?.message}
+                    InputLabelProps={{ sx: { fontSize: '14px' } }}
+                    InputProps={{
+                      sx: { fontSize: '14px', py: 0.5 },
+                    }}
+                  />
+                )}
               />
             </Grid>
           ))}
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'flex-start',
+              marginTop: 2,
+              paddingLeft: 1.5,
+            }}
+          >
+            {error && (
+              <Typography color="error" variant="body2" fontSize={'11px'}>
+                {helperText}
+              </Typography>
+            )}
+          </Box>
           <Box
             sx={{
               width: '100%',
@@ -95,7 +136,7 @@ const Form = ({
               marginTop: 2,
             }}
           >
-            {variant === 'Login' ? (
+            {variant === 'Login' && (
               <PrimaryButton
                 size="small"
                 variant="text"
@@ -106,11 +147,12 @@ const Form = ({
               >
                 Forgot Password?
               </PrimaryButton>
-            ) : null}
+            )}
           </Box>
           <Grid item xs={12}>
             <Button
               type="submit"
+              disabled={loading}
               sx={{
                 width: '100%',
                 padding: 1,
@@ -130,46 +172,22 @@ const Form = ({
               disableElevation
             >
               {loading ? (
-                <CircularProgress size={25} color="secondary" />
+                <CircularProgress size={24} color="inherit" />
               ) : (
                 variant
               )}
             </Button>
-            {variant === 'Login' ? (
+            {variant === 'Login' && (
               <Divider
                 textAlign="center"
                 sx={{ marginTop: 1, marginBottom: 1 }}
               >
                 <Chip label="or" size="small" />
               </Divider>
-            ) : null}
+            )}
           </Grid>
-          {variant === 'Login' ? (
-            <Grid item xs={12}>
-              <Button
-                startIcon={<GoogleIcon />}
-                sx={{
-                  width: '100%',
-                  padding: 1,
-                  marginBottom: 2,
-                  borderRadius: 1.5,
-                  textTransform: 'none',
-                  backgroundColor: '#4285F4',
-                  '&:hover': {
-                    backgroundColor: '#357AE8',
-                  },
-                  color: '#fff',
-                }}
-                variant="contained"
-                size="medium"
-                disableRipple
-                disableElevation
-              >
-                Sign in with Google
-              </Button>
-            </Grid>
-          ) : null}
         </Grid>
+
         <Typography variant="body2" textAlign={'center'}>
           <PrimaryButton
             fontWeight={500}
