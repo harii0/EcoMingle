@@ -7,9 +7,14 @@ import adminRoute from './features/admin/routes/admin.route.js';
 import orderRoute from './features/order/order.route.js';
 import handleStripeWebhook from './features/webhook/webhook.controller.js';
 import cookieParser from 'cookie-parser';
+import 'dotenv/config';
 const app = express();
 //middleware
-app.use(cors());
+const corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
