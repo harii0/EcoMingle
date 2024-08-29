@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { login, logout, register } from './api';
+import TokenService from '../../services/auth.service';
 
 const initialState = {
   user: localStorage.getItem('user') || null,
-  isAuthenticated: false,
+  isAuthenticated: false || localStorage.getItem('user') ? true : false,
   status: 'idle',
   error: null,
   helperText: '',
@@ -27,7 +28,7 @@ export const loginUser = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await login(data);
-      localStorage.setItem('user', JSON.stringify(response.data));
+      TokenService.setUser(response?.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -40,7 +41,7 @@ export const logoutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await logout();
-      localStorage.removeItem('user');
+      TokenService.removeUser('user');
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
