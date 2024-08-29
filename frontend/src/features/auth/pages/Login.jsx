@@ -9,7 +9,9 @@ const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { error, loading, helperText } = useSelector((state) => state.auth);
+  const { error, loading, helperText, isAuthenticated } = useSelector(
+    (state) => state.auth,
+  );
 
   // Define form fields
   const fields = [
@@ -28,11 +30,12 @@ const LoginForm = () => {
   const onSubmit = async (data) => {
     dispatch(loginUser(data));
   };
+
   useEffect(() => {
-    if (error == false) {
-      navigate('/dashboard');
+    if (error == false && isAuthenticated) {
+      navigate('/dashboard', { replace: true });
     }
-  }, [error, navigate]);
+  }, [error, isAuthenticated]);
 
   return (
     <Box
