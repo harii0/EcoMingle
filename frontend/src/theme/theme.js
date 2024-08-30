@@ -36,6 +36,7 @@ const theme = createTheme({
       fontWeight: 500,
       color: '#333333',
     },
+    h6: { fontSize: '18px' },
     body1: {
       fontSize: '1rem',
       fontWeight: 400,
@@ -105,6 +106,14 @@ const theme = createTheme({
           fontSize: '1.75rem',
           fontWeight: 500,
           color: '#333333',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 10,
+          boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
         },
       },
     },
