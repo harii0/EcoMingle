@@ -22,7 +22,9 @@ api.interceptors.response.use(
 
     if (
       error.response &&
-      error.response.status === 401 &&
+      (error.response.status === 401 ||
+        (error.response.status === 400 &&
+          error.response.data.message?.errorCode === 'TOKEN_EXPIRED')) &&
       !originalConfig._retry &&
       !originalConfig.skipInterceptor
     ) {
