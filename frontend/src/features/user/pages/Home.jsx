@@ -7,9 +7,18 @@ import ReviewCard from '../components/ReviewCard';
 import reviewImg1 from '../../../assets/images/reviewimg.png';
 import reviewImg2 from '../../../assets/images/reviewimg2.png';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
 const Home = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated]);
 
   return (
     <Box>
