@@ -23,9 +23,12 @@ import {
   FavoriteOutlined,
   MoreHorizOutlined,
 } from '@mui/icons-material';
+import { PiLeafLight } from 'react-icons/pi';
+
 import { useEffect, useState } from 'react';
 
 import { getProfile } from '../api/profileApi';
+import EmissionCard from '../../../components/EmissionCard';
 
 const Profile = () => {
   const [profile, setProfile] = useState({});
@@ -59,12 +62,12 @@ const Profile = () => {
   }
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         {/* Profile Summary */}
         <Grid item xs={12} md={4} lg={3}>
           <Paper
             sx={{
-              p: 3,
+              p: 4.5,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -90,7 +93,7 @@ const Profile = () => {
                 }}
               >
                 <IconButton>
-                  <MoreHorizOutlined sx={{ color: '#E5E4E2' }} />
+                  <MoreHorizOutlined sx={{ color: 'text.custom' }} />
                 </IconButton>
               </Tooltip>
             </Box>
@@ -113,31 +116,40 @@ const Profile = () => {
                 </Avatar>
               )}
             </Avatar>
-            <Typography variant="h5" gutterBottom>
-              {profile?.name}
+            <Typography variant="h6" gutterBottom>
+              {profile?.username}
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
               Eco Enthusiast
             </Typography>
-            <Box sx={{ width: '100%', mt: 2 }}>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Eco Impact Score
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={85}
-                color="success"
-                sx={{ height: 10, borderRadius: 5 }}
-              />
-              <Typography variant="body2" color="text.secondary" align="right">
-                85%
+            <Box
+              display={'flex'}
+              justifyContent={'center'}
+              alignItems={'center'}
+              sx={{ width: '100%', pt: 2, textAlign: 'center' }}
+            >
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                gutterBottom
+                component={'div'}
+              >
+                0 <PiLeafLight size={18} />
               </Typography>
             </Box>
           </Paper>
         </Grid>
 
+        <Grid item xs={12} md={6} lg>
+          <EmissionCard
+            userName="Alex Green"
+            totalEmission={1250}
+            emissionReduction={15}
+          />
+        </Grid>
+
         {/* Main Content */}
-        <Grid item xs={12} md={8} lg={9}>
+        <Grid item xs={12} md={8} lg={5}>
           <Paper sx={{ p: 2, bgcolor: 'background.default' }}>
             <Typography
               variant="h6"
