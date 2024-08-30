@@ -17,6 +17,7 @@ const theme = createTheme({
     text: {
       primary: '#333333', // Dark gray for primary text.
       secondary: '#666666', // Light gray for secondary text.
+      custom: '#D3D3D3', // Green for custom text.
     },
   },
   typography: {
