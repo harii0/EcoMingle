@@ -32,17 +32,16 @@ import EmissionCard from '../../../components/EmissionCard';
 
 const Profile = () => {
   const [profile, setProfile] = useState({});
-  const [avtar, setAvtar] = useState(null);
+  const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log(profile);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await getProfile();
         setProfile(response.data.data.profile);
-        setAvtar(response.data.data.profile.username[0]);
+        setAvatar(response.data.data.profile.username[0].toUpperCase());
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -58,105 +57,83 @@ const Profile = () => {
   }
 
   if (error) {
-    return <div>Something went wrong!</div>;
+    return <Typography color="error">Something went wrong!</Typography>;
   }
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
         {/* Profile Summary */}
         <Grid item xs={12} md={4} lg={3}>
           <Paper
+            elevation={3}
             sx={{
-              p: 4.5,
+              p: 4,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              bgcolor: 'background.default',
               position: 'relative',
+              bgcolor: 'background.paper',
             }}
           >
+            {/* Edit Profile Button */}
             <Box sx={{ position: 'absolute', top: 10, right: 20 }}>
-              <Tooltip
-                title="Edit Profile"
-                placement="top"
-                slotProps={{
-                  popper: {
-                    modifiers: [
-                      {
-                        name: 'offset',
-                        options: {
-                          offset: [0, -14],
-                        },
-                      },
-                    ],
-                  },
-                }}
-              >
+              <Tooltip title="Edit Profile" placement="top">
                 <IconButton>
-                  <MoreHorizOutlined sx={{ color: 'text.custom' }} />
+                  <MoreHorizOutlined color="text.secondary" />
                 </IconButton>
               </Tooltip>
             </Box>
+
+            {/* Avatar */}
             <Avatar
               sx={{
                 width: 100,
                 height: 100,
                 mb: 2,
-                bgcolor: 'success.main',
+                bgcolor: profile?.profileImg ? 'transparent' : 'success.main',
+                border: profile?.profileImg ? '2px solid' : 'none',
+                borderColor: 'primary.main',
               }}
-              alt="Jane Green"
+              alt={profile?.username}
+              src={profile?.profileImg || undefined}
             >
-              {profile?.profileImg ? (
-                <img src={profile.profileImg} alt="Profile Image" />
-              ) : (
-                <Avatar
-                  sx={{ width: 100, height: 100, bgcolor: 'success.main' }}
-                >
-                  {avtar}
-                </Avatar>
-              )}
+              {!profile?.profileImg && avatar}
             </Avatar>
+
+            {/* Username */}
             <Typography variant="h6" gutterBottom>
               {profile?.username}
             </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
+
+            {/* User Role */}
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
               Eco Enthusiast
             </Typography>
-            <Box
-              display={'flex'}
-              justifyContent={'center'}
-              alignItems={'center'}
-              sx={{ width: '100%', pt: 2, textAlign: 'center' }}
-            >
-              <Typography
-                variant="body1"
-                color="text.secondary"
-                gutterBottom
-                component={'div'}
-              >
-                0 <PiLeafLight size={18} />
+
+            {/* Eco Points */}
+            <Box display="flex" alignItems="center" sx={{ mt: 2 }}>
+              <Typography variant="h6" color="text.primary" mr={1}>
+                {profile?.ecoPoints || 0}
               </Typography>
+              <PiLeafLight size={20} color="#4caf50" />
             </Box>
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={6} lg>
+        {/* Emission Card */}
+        <Grid item xs={12} md={6} lg={4}>
           <EmissionCard
-            userName="Alex Green"
-            totalEmission={1250}
-            emissionReduction={15}
+            userName={profile?.username || 'User'}
+            totalEmission={profile?.totalEmission || 0}
+            emissionReduction={profile?.emissionReduction || 0}
           />
         </Grid>
 
-        {/* Main Content */}
+        {/* Profile Information */}
         <Grid item xs={12} md={8} lg={5}>
-          <Paper sx={{ p: 2, bgcolor: 'background.default' }}>
-            <Typography
-              variant="h6"
-              fontSize={18}
-              gutterBottom
-              color="text.primary"
-            >
+          <Paper elevation={3} sx={{ p: 3, bgcolor: 'background.paper' }}>
+            <Typography variant="h6" gutterBottom color="text.primary">
               Profile Information
             </Typography>
             <List>
@@ -170,7 +147,10 @@ const Profile = () => {
                 <ListItemIcon>
                   <LocationOnOutlined color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Location" secondary="Portland, OR" />
+                <ListItemText
+                  primary="Location"
+                  secondary={profile?.location || 'Portland, OR'}
+                />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
@@ -178,7 +158,9 @@ const Profile = () => {
                 </ListItemIcon>
                 <ListItemText
                   primary="Favorite Eco Category"
-                  secondary="Organic Home & Garden"
+                  secondary={
+                    profile?.favoriteEcoCategory || 'Organic Home & Garden'
+                  }
                 />
               </ListItem>
             </List>
@@ -187,7 +169,7 @@ const Profile = () => {
 
         {/* Shopping Habits */}
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2, bgcolor: 'background.default' }}>
+          <Paper elevation={3} sx={{ p: 3, bgcolor: 'background.paper' }}>
             <Typography variant="h6" gutterBottom color="text.primary">
               Eco Shopping Habits
             </Typography>
@@ -198,7 +180,7 @@ const Profile = () => {
                 </ListItemIcon>
                 <ListItemText
                   primary="Total Eco Purchases"
-                  secondary="47 items"
+                  secondary={`${profile?.totalEcoPurchases || 0} items`}
                 />
               </ListItem>
               <ListItem>
@@ -207,7 +189,9 @@ const Profile = () => {
                 </ListItemIcon>
                 <ListItemText
                   primary="Plastic Saved"
-                  secondary="Equivalent to 230 plastic bottles"
+                  secondary={`Equivalent to ${
+                    profile?.plasticSaved || 0
+                  } plastic bottles`}
                 />
               </ListItem>
               <ListItem>
@@ -216,7 +200,7 @@ const Profile = () => {
                 </ListItemIcon>
                 <ListItemText
                   primary="Carbon Footprint Reduced"
-                  secondary="125 kg CO2"
+                  secondary={`${profile?.carbonFootprintReduced || 0} kg CO2`}
                 />
               </ListItem>
             </List>
@@ -225,13 +209,8 @@ const Profile = () => {
 
         {/* Sustainability Preferences */}
         <Grid item xs={12} md={6}>
-          <Paper
-            sx={{
-              p: 2,
-              bgcolor: 'background.default',
-            }}
-          >
-            <Typography variant="h6" gutterBottom color="texr.primary">
+          <Paper elevation={3} sx={{ p: 3, bgcolor: 'background.paper' }}>
+            <Typography variant="h6" gutterBottom color="text.primary">
               Sustainability Preferences
             </Typography>
             <List>
@@ -241,7 +220,10 @@ const Profile = () => {
                 </ListItemIcon>
                 <ListItemText
                   primary="Favorite Eco Brands"
-                  secondary="EcoWare, GreenLife, NaturalBliss"
+                  secondary={
+                    profile?.favoriteEcoBrands ||
+                    'EcoWare, GreenLife, NaturalBliss'
+                  }
                 />
               </ListItem>
               <ListItem>
@@ -250,7 +232,10 @@ const Profile = () => {
                 </ListItemIcon>
                 <ListItemText
                   primary="Eco Certifications Preferred"
-                  secondary="Organic, Fair Trade, B Corp"
+                  secondary={
+                    profile?.ecoCertificationsPreferred ||
+                    'Organic, Fair Trade, B Corp'
+                  }
                 />
               </ListItem>
               <ListItem>
@@ -259,7 +244,9 @@ const Profile = () => {
                 </ListItemIcon>
                 <ListItemText
                   primary="Recycling Habits"
-                  secondary="Actively recycles and composts"
+                  secondary={
+                    profile?.recyclingHabits || 'Actively recycles and composts'
+                  }
                 />
               </ListItem>
             </List>
