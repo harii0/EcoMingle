@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux';
 import './utils/interceptors.js';
 import store from './redux/store.js';
