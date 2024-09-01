@@ -6,12 +6,13 @@ const EmissionCard = ({ totalEmission, emissionReduction }) => {
   return (
     <Paper>
       <Card>
-        <CardContent sx={{ p: 1 }}>
+        <CardContent
+          sx={{ p: 1, display: 'flex', flexDirection: 'column', gap: 2 }}
+        >
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="flex-start"
-            sx={{ mb: 1 }}
           >
             <Typography variant="h6">Eco Impact</Typography>
             <InfoOutlined fontSize="medium" sx={{ color: 'text.custom' }} />
@@ -22,6 +23,9 @@ const EmissionCard = ({ totalEmission, emissionReduction }) => {
               bgcolor: 'rgba(144, 238, 144, 0.1)',
               borderRadius: 2,
               p: 0.5,
+              display: 'flex',
+              alignItems: 'center',
+              flexDirection: 'column',
             }}
           >
             <Typography variant="h4" component="div" fontWeight="medium">
@@ -35,7 +39,7 @@ const EmissionCard = ({ totalEmission, emissionReduction }) => {
             </Typography>
           </Box>
 
-          <Box display="flex" alignItems="center" sx={{ mt: 2 }}>
+          <Box display="flex" alignItems="center" sx={{ mt: 1 }}>
             <TrendingDown fontSize="small" color="success" sx={{ mr: 1 }} />
             <Typography
               variant="h6"
@@ -56,7 +60,7 @@ const EmissionCard = ({ totalEmission, emissionReduction }) => {
             </Typography>
           </Box>
 
-          <Grid container spacing={1} mt={2.5}>
+          <Grid container spacing={1} mt={1}>
             {[
               { label: 'Trees Saved', value: Math.round(totalEmission / 20) },
               {
