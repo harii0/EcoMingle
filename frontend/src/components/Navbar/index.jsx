@@ -3,21 +3,20 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
-import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
+import { LuShoppingCart, LuUserCircle, LuSearch } from 'react-icons/lu';
+
 import { Search, SearchIconWrapper, StyledInputBase } from './navbar.style';
 import logo from '../../assets/images/logo.svg';
-import { Button, List, ListItemButton, ListItemText } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
+import { useSelector } from 'react-redux';
 
 export default function PrimarySearchAppBar() {
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -87,10 +86,10 @@ export default function PrimarySearchAppBar() {
             color="error"
             sx={{ '& .MuiBadge-badge': { fontSize: '10px' } }}
           >
-            <LocalMallOutlinedIcon color="secondary" />
+            <LuShoppingCart color="secondary" fontSize={24} strokeWidth={1.5} />
           </Badge>
         </IconButton>
-        <p>Messages</p>
+        <p>cart</p>
       </MenuItem>
       <MenuItem disableRipple>
         <IconButton
@@ -116,39 +115,37 @@ export default function PrimarySearchAppBar() {
           aria-haspopup="true"
           color="inherit"
         >
-          <Person2OutlinedIcon />
+          <LuUserCircle fontSize={24} strokeWidth={1.5} />
         </IconButton>
         <p>Profile</p>
       </MenuItem>
     </Menu>
   );
 
-  const user = false;
   return (
     <Box>
       <AppBar
         position="fixed"
         elevation={0}
-        sx={{ py: '2px', backgroundColor: 'white', color: 'black' }}
+        sx={{
+          backgroundColor: 'white',
+          color: 'black',
+          border: '1px solid #e0e0e0',
+          borderRadius: 0,
+          padding: 0,
+        }}
       >
         <Toolbar
+          variant="dense"
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            minHeight: '50px',
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <img src={logo} alt="logo" width={40} height={40} />
-            <Typography
-              variant="h6"
-              fontSize={18}
-              noWrap
-              component="div"
-              sx={{ display: { xs: 'none', sm: 'block' } }}
-            >
-              EcoMingle
-            </Typography>
+            <img src={logo} alt="logo" width={80} height={50} />
           </Box>
           <Box
             sx={{
@@ -157,32 +154,15 @@ export default function PrimarySearchAppBar() {
               alignItems: 'center',
             }}
           >
-            {['Home', 'About', 'Contact', 'Blog'].map((item, index) => {
-              return (
-                <List
-                  key={index}
-                  sx={{
-                    display: 'flex',
-                  }}
-                >
-                  <ListItemButton
-                    sx={{
-                      '&:hover': {
-                        background: 'transparent',
-                        color: '#000',
-                      },
-                      '& .MuiListItemText-primary': {
-                        fontSize: '14px',
-                      },
-                    }}
-                    disableRipple
-                    disableTouchRipple
-                  >
-                    <ListItemText secondary={item} />
-                  </ListItemButton>
-                </List>
-              );
-            })}
+            <Search sx={{ borderRadius: '50px' }}>
+              <SearchIconWrapper>
+                <LuSearch color="grey" />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ 'aria-label': 'search' }}
+              />
+            </Search>
           </Box>
 
           <Box
@@ -196,28 +176,19 @@ export default function PrimarySearchAppBar() {
               },
             }}
           >
-            <Search sx={{ borderRadius: '50px' }}>
-              <SearchIconWrapper>
-                <SearchOutlinedIcon sx={{ color: 'grey' }} />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }}
-              />
-            </Search>
-
             <Box
               sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
             >
-              {user ? (
+              {isAuthenticated ? (
                 <>
                   <IconButton
                     size="large"
                     aria-label="show 4 new mails"
                     color="inherit"
+                    disableRipple
                   >
                     <Badge badgeContent={4} color="primary">
-                      <LocalMallOutlinedIcon />
+                      <LuShoppingCart fontSize={24} strokeWidth={1.5} />
                     </Badge>
                   </IconButton>
 
@@ -229,8 +200,9 @@ export default function PrimarySearchAppBar() {
                     aria-haspopup="true"
                     onClick={handleProfileMenuOpen}
                     color="inherit"
+                    disableRipple
                   >
-                    <Person2OutlinedIcon />
+                    <LuUserCircle fontSize={24} strokeWidth={1.5} />
                   </IconButton>
                 </>
               ) : (
