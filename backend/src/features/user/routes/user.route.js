@@ -32,7 +32,7 @@ router.patch('/update', verifyJwt, upload.single('avatar'), updateUser);
 router.post('/logout', verifyJwt, logoutUser);
 router.get('/profile', verifyJwt, getUserProfile);
 router.get('/wishlist', verifyJwt, getUserWhislist);
-router.post('/ratings/:prodId', verifyJwt, rateProduct);
+router.post('/orders/ratings/:pId', verifyJwt, rateProduct);
 
 //products
 router.get('/category', verifyJwt, getProductsByCategory);
