@@ -87,7 +87,7 @@ const theme = createTheme({
     MuiIconButton: {
       styleOverrides: {
         root: {
-          color: '#666666', // Default color for icons in buttons.
+          color: '#666666',
         },
       },
     },
@@ -115,6 +115,14 @@ const theme = createTheme({
         root: {
           borderRadius: 10,
           boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+        },
+      },
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        dense: {
+          height: '57px',
+          minHeight: '57px',
         },
       },
     },
