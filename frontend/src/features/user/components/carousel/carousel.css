@@ -1,0 +1,123 @@
+.embla {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  justify-content: center;
+  --slide-height: 22rem;
+  --slide-spacing: 1rem;
+  --slide-size: 100%;
+}
+
+.embla__viewport {
+  overflow: hidden;
+  border-left: 1px solid #d3d3d3;
+}
+
+.embla__container {
+  display: flex;
+  touch-action: pan-y pinch-zoom;
+  width: 450px;
+}
+
+.embla__slide {
+  transform: translate3d(0, 0, 0);
+  flex: 0 0 100%;
+  min-width: 0;
+  width: 400px;
+}
+
+.slide_image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  width: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+.embla__controls {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  justify-content: space-between;
+  gap: 1.2rem;
+  margin-top: 1px;
+}
+
+.embla__dots {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.embla__dot {
+  -webkit-tap-highlight-color: rgba(49, 49, 49, 0.5);
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  touch-action: manipulation;
+  display: inline-flex;
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 1rem;
+  height: 1rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.embla__dot:after {
+  background-color: rgb(234, 234, 234);
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  content: '';
+}
+
+.embla__dot--selected:after {
+  outline: 1.5px solid #2e7d32;
+  outline-offset: 2px;
+}
+
+.product {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  width: 30vw;
+}
+.product_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+}
+.product_descrtiption {
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 6px 10px;
+}
+
+@media (max-width: 768px) {
+  .embla__viewport {
+    display: none;
+  }
+  .embla__controls {
+    display: none;
+  }
+  .product {
+    width: 100%;
+  }
+  .embla__slide {
+    flex: 0 0 100%;
+  }
+}
