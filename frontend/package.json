@@ -18,6 +18,8 @@
     "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.4",
     "dotenv": "^16.4.5",
+    "embla-carousel-autoplay": "^8.2.1",
+    "embla-carousel-react": "^8.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.53.0",
