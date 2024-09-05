@@ -17,13 +17,10 @@ const Footer = () => {
         {/* Logo and Description */}
         <Grid item xs={12} md={3}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <img src={logo} alt="EcoMingle" width="40px" height="40px" />
-            <Typography variant="h6" sx={{ ml: 1 }}>
-              EcoMingle
-            </Typography>
+            <img src={logo} alt="EcoMingle" width="100px" height="40px" />
           </Box>
           <Typography variant="body2" color="text.secondary">
-            DevCut is a YouTube channel for practical project-based learning.
+            Empowering sustainable choices for a greener tomorrow.
           </Typography>
           <Box sx={{ mt: 2, display: 'flex', gap: '10px' }}>
             <IconButton href="#" aria-label="GitHub">
