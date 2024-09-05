@@ -3,7 +3,7 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2e7d32', // Eco-friendly green color for primary actions.
+      main: '#447C5A', // Eco-friendly green color for primary actions.
       contrastText: '#ffffff',
     },
     secondary: {
@@ -69,9 +69,15 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)', // Soft shadow for depth.
+          borderRadius: 10,
           padding: '16px',
+        },
+      },
+    },
+    MuiCardContent: {
+      styleOverrides: {
+        root: {
+          padding: 0,
         },
       },
     },
@@ -123,6 +129,17 @@ const theme = createTheme({
         dense: {
           height: '57px',
           minHeight: '57px',
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        outlined: {
+          borderRadius: 6,
+          fontSize: '12px',
+          padding: 0,
+          margin: 0,
+          height: '25px',
         },
       },
     },
