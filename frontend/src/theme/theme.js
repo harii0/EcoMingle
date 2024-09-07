@@ -143,6 +143,16 @@ const theme = createTheme({
         },
       },
     },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          '&.Mui-selected': {
+            backgroundColor: '#447C5A',
+            color: '#ffff',
+          },
+        },
+      },
+    },
   },
 });
 
