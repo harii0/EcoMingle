@@ -33,7 +33,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (error == false && isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     }
   }, [error, isAuthenticated]);
 
