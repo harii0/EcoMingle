@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -9,17 +10,31 @@ import Menu from '@mui/material/Menu';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import { LuShoppingCart, LuUserCircle, LuSearch } from 'react-icons/lu';
-
-import { Search, SearchIconWrapper, StyledInputBase } from './navbar.style';
+import { Search, StyledInputBase } from './navbar.style';
 import logo from '../../assets/images/logo.svg';
 import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
-
+import { useNavigate } from 'react-router-dom';
+import { logoutUser } from '../../features/auth/authSlice.js';
+import { useDispatch } from 'react-redux';
 export default function PrimarySearchAppBar() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [search, setSearch] = useState('');
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let searchQuery = search.trim();
+    navigate(`/catalog?search=${searchQuery}`);
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate('/login');
+  };
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -59,6 +74,7 @@ export default function PrimarySearchAppBar() {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
 
@@ -155,13 +171,36 @@ export default function PrimarySearchAppBar() {
             }}
           >
             <Search sx={{ borderRadius: '50px' }}>
-              <SearchIconWrapper>
-                <LuSearch color="grey" />
-              </SearchIconWrapper>
               <StyledInputBase
                 placeholder="Search…"
                 inputProps={{ 'aria-label': 'search' }}
+                onChange={(e) => setSearch(e.target.value.trim())}
               />
+              <Button
+                disabled={search === ''}
+                disableRipple
+                size="small"
+                type="submit"
+                disableElevation
+                variant="contained"
+                sx={{
+                  minWidth: '40px',
+                  minHeight: '35px',
+                  fontSize: '12px',
+
+                  fontWeight: 'medium',
+                  backgroundColor: 'primary.main',
+                  color: 'white',
+                  borderRadius: '50px',
+
+                  ':hover': {
+                    backgroundColor: '#2E7D32',
+                  },
+                }}
+                onClick={handleSubmit}
+              >
+                <LuSearch color="white" fontSize={18} strokeWidth={1.5} />
+              </Button>
             </Search>
           </Box>
 
@@ -217,7 +256,7 @@ export default function PrimarySearchAppBar() {
                   disableElevation
                   variant="contained"
                   disableRipple
-                  onClick={() => (window.location.href = '/login')}
+                  onClick={() => navigate('/login')}
                 >
                   Login
                 </Button>
