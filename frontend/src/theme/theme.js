@@ -153,6 +153,37 @@ const theme = createTheme({
         },
       },
     },
+    MuiBreadcrumbs: {
+      styleOverrides: {
+        root: {
+          position: 'fixed',
+          zIndex: 1,
+          marginLeft: '10px',
+
+          fontSize: '12px',
+          color: '#666666',
+        },
+        separator: {
+          color: '#666666',
+          marginLeft: '10px',
+          marginRight: '10px',
+        },
+      },
+    },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          color: '#666666',
+          '&.Mui-checked': {
+            backgroundColor: 'transparent',
+            color: '#447C5A',
+            '&:hover': {
+              backgroundColor: 'transparent',
+            },
+          },
+        },
+      },
+    },
   },
 });
 
