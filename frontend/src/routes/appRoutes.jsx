@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 import Login from '../features/auth/pages/Login';
 import ForgetPassword from '../features/auth/pages/ForgetPassword';
@@ -8,23 +8,20 @@ import Dashboard from '../features/user/pages/Dashboard';
 import ProtectedRoute from '../components/ProtectedRoute';
 import Profile from '../features/user/pages/Profile';
 import NotFound from '../components/NotFound';
+import Catalog from '../features/user/pages/Catalog';
 
 const AppRoutes = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="*" element={<NotFound />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgetpassword" element={<ForgetPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route
-          path="/dashboard"
-          element={<ProtectedRoute element={Dashboard} />}
-        />
-        <Route path="/profile" element={<ProtectedRoute element={Profile} />} />
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="*" element={<ProtectedRoute element={NotFound} />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgetpassword" element={<ForgetPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/profile" element={<ProtectedRoute element={Profile} />} />
+      <Route path="/catalog" element={<Catalog />} />
+    </Routes>
   );
 };
 
