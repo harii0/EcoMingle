@@ -143,6 +143,7 @@ const theme = createTheme({
         },
       },
     },
+
     MuiTab: {
       styleOverrides: {
         root: {
@@ -156,10 +157,7 @@ const theme = createTheme({
     MuiBreadcrumbs: {
       styleOverrides: {
         root: {
-          position: 'fixed',
-          zIndex: 1,
-          marginLeft: '10px',
-
+          margin: '0px',
           fontSize: '12px',
           color: '#666666',
         },
@@ -181,6 +179,14 @@ const theme = createTheme({
               backgroundColor: 'transparent',
             },
           },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        standard: {
+          background: 'transparent',
+          textDecoration: 'none',
         },
       },
     },
