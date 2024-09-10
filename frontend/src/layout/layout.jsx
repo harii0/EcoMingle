@@ -1,32 +1,33 @@
 import { Box } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Footer from '../components/footer';
-// eslint-disable-next-line react/prop-types
+import BreadCrumbs from '../components/BreadCrumb';
+
 const Layout = ({ children }) => {
   return (
-    <div>
-      <main
-        style={{
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        backgroundColor: '#ffff',
+      }}
+    >
+      <Navbar />
+      <Box
+        component="main"
+        sx={{
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh',
-          backgroundColor: '#ffff',
+          gap: 2,
+          py: 7,
         }}
       >
-        <Navbar />
-        <Box
-          sx={{
-            py: 7,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-          }}
-        >
-          {children}
-        </Box>
-        <Footer />
-      </main>
-    </div>
+        <BreadCrumbs />
+        {children}
+      </Box>
+      <Footer />
+    </Box>
   );
 };
 
