@@ -87,6 +87,7 @@ const theme = createTheme({
           backgroundColor: '#ffffff', // White app bar for a clean look.
           color: '#333333',
           boxShadow: 'none',
+          borderRadius: 0,
         },
       },
     },
@@ -126,6 +127,18 @@ const theme = createTheme({
     },
     MuiToolbar: {
       styleOverrides: {
+        regular: {
+          minHeight: '50px',
+          minWidth: '100%',
+
+          padding: '0px',
+          width: '100%',
+          '@media (min-width: 600px)': {
+            minHeight: '50px',
+            padding: '0px',
+            alignItems: 'center',
+          },
+        },
         dense: {
           height: '57px',
           minHeight: '57px',
