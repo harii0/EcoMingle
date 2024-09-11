@@ -1,6 +1,7 @@
 // components/BreadCrumbs.js
 import { Breadcrumbs as MuiBreadCrumbs, Link, Typography } from '@mui/material';
-import { withRouting } from '../hooks/withRouting'; // import the HOC
+import { withRouting } from '../hooks/withRouting';
+import { LuDot } from 'react-icons/lu';
 
 const BreadCrumbs = (props) => {
   const {
@@ -21,9 +22,10 @@ const BreadCrumbs = (props) => {
   return (
     <MuiBreadCrumbs
       aria-label="breadcrumb"
-      separator={'/'}
+      separator={<LuDot />}
       sx={{
         width: '100%',
+        py: 1,
         backgroundColor: '#ffffff',
       }}
     >
