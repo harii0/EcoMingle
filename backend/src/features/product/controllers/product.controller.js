@@ -19,13 +19,11 @@ const getAllProducts = asyncHandler(async (req, res) => {
   }
   return res.status(200).json(new ApiResponse(200, { products }, 'Products'));
 });
-//get product items by id
+
 const getProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const product = await Product.findById(id).populate('productItem');
-  if (!product) {
-    throw new ApiError(404, 'Product not found');
-  }
+  const product = await Product.findById(id).populate('productItems');
+  if (!product) return new ApiError(404, 'Product not found');
   return res.status(200).json(new ApiResponse(200, { product }, 'Product'));
 });
 
