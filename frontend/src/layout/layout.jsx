@@ -2,7 +2,6 @@ import { Box } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Footer from '../components/footer';
 import BreadCrumbs from '../components/BreadCrumb';
-
 const Layout = ({ children }) => {
   return (
     <Box
@@ -14,12 +13,12 @@ const Layout = ({ children }) => {
       }}
     >
       <Navbar />
+
       <Box
         component="main"
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          gap: 2,
           py: 7,
         }}
       >
