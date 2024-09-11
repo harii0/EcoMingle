@@ -9,6 +9,7 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import Profile from '../features/user/pages/Profile';
 import NotFound from '../components/NotFound';
 import Catalog from '../features/user/pages/Catalog';
+import ProductPage from '../features/user/pages/Product';
 
 const AppRoutes = () => {
   return (
@@ -20,6 +21,7 @@ const AppRoutes = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<Dashboard />} />
       <Route path="/profile" element={<ProtectedRoute element={Profile} />} />
+      <Route path="/product/:id" element={<ProductPage />} />
       <Route path="/catalog" element={<Catalog />} />
     </Routes>
   );
