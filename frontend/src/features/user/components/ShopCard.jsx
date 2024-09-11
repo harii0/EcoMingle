@@ -8,9 +8,10 @@ import {
 } from '@mui/material';
 import { LuShoppingBasket, LuHeart } from 'react-icons/lu';
 
-const ShopCard = ({ label, image, title, price }) => {
+const ShopCard = ({ label, image, title, price, onClick }) => {
   return (
     <Card
+      onClick={onClick}
       elevation={0}
       sx={{
         display: 'flex',
