@@ -176,18 +176,22 @@ export default function PrimarySearchAppBar() {
                 inputProps={{ 'aria-label': 'search' }}
                 onChange={(e) => setSearch(e.target.value.trim())}
               />
-              <Button
+              <IconButton
                 disabled={search === ''}
                 disableRipple
                 size="small"
                 type="submit"
-                disableElevation
                 variant="contained"
                 sx={{
-                  minWidth: '40px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  minWidth: '35px',
+                  width: '35px',
+                  marginRight: '2px',
+                  my: '1px',
                   minHeight: '35px',
                   fontSize: '12px',
-
                   fontWeight: 'medium',
                   backgroundColor: 'primary.main',
                   color: 'white',
@@ -196,11 +200,14 @@ export default function PrimarySearchAppBar() {
                   ':hover': {
                     backgroundColor: '#2E7D32',
                   },
+                  '&.Mui-disabled': {
+                    backgroundColor: '#e0e0e0',
+                  },
                 }}
                 onClick={handleSubmit}
               >
                 <LuSearch color="white" fontSize={18} strokeWidth={1.5} />
-              </Button>
+              </IconButton>
             </Search>
           </Box>
 
