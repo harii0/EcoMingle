@@ -60,7 +60,7 @@ router.patch(
 
 router.delete('/products/:pId', verifyJwt, isVendor, deleteProduct);
 
-router.get('/products', verifyJwt, isVendor, getAllProducts);
+router.get('/products', getAllProducts);
 
 //product items
 router.post('/create-item', verifyJwt, isVendor, createProductItem); //not admin its vendor
