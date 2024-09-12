@@ -101,7 +101,7 @@ function EcoFriendlyNavbar() {
                       sx: {
                         backgroundColor: '#ffffff',
                         color: '#000',
-                        borderRadius: '0',
+                        borderRadius: '10px',
                         marginTop: '10px',
                       },
                     }}
