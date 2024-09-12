@@ -49,6 +49,7 @@ export default function PrimarySearchAppBar() {
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
+    navigate('/profile');
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -139,7 +140,7 @@ export default function PrimarySearchAppBar() {
   );
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
       <AppBar
         position="fixed"
         elevation={0}
@@ -147,8 +148,11 @@ export default function PrimarySearchAppBar() {
           backgroundColor: 'white',
           color: 'black',
           border: '1px solid #e0e0e0',
+          borderLeft: 'none',
+          borderRight: 'none',
           borderRadius: 0,
-          padding: 0,
+          margin: '0px 8px',
+          maxWidth: 'calc(100% - 16px)',
         }}
       >
         <Toolbar
