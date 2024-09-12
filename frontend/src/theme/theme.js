@@ -16,7 +16,7 @@ const theme = createTheme({
     },
     text: {
       primary: '#333333', // Dark gray for primary text.
-      secondary: '#666666', // Light gray for secondary text.
+      secondary: '#5C5F6A', // Light gray for secondary text.
       custom: '#D3D3D3', // Green for custom text.
     },
   },
@@ -159,12 +159,7 @@ const theme = createTheme({
 
     MuiTab: {
       styleOverrides: {
-        root: {
-          '&.Mui-selected': {
-            backgroundColor: '#447C5A',
-            color: '#ffff',
-          },
-        },
+        root: {},
       },
     },
     MuiBreadcrumbs: {
