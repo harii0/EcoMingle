@@ -4,8 +4,11 @@ import { InfoOutlined, TrendingDown } from '@mui/icons-material';
 
 const EmissionCard = ({ totalEmission, emissionReduction }) => {
   return (
-    <Paper>
-      <Card>
+    <Paper
+      elevation={0}
+      sx={{ boxShadow: 'none', border: '1px solid #E5E5E5' }}
+    >
+      <Card sx={{ boxShadow: 'none' }}>
         <CardContent
           sx={{ p: 1, display: 'flex', flexDirection: 'column', gap: 2 }}
         >
