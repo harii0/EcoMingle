@@ -1,41 +1,59 @@
+import { useState, useEffect } from 'react';
 import {
   Box,
+  Button,
   Container,
   Grid,
   Paper,
+  Tab,
+  Tabs,
   Typography,
-  Avatar,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  LinearProgress,
-  Tooltip,
-  IconButton,
 } from '@mui/material';
+
 import {
-  EmailOutlined,
-  LocationOnOutlined,
-  EmojiNatureOutlined,
-  Co2Outlined,
-  RecyclingOutlined,
-  ShoppingBagOutlined,
-  FavoriteOutlined,
-  MoreHorizOutlined,
-} from '@mui/icons-material';
-import { PiLeafLight } from 'react-icons/pi';
-
-import { useEffect, useState } from 'react';
-
-import { getProfile } from '../api/profileApi';
+  LuUserCircle,
+  LuMapPin,
+  LuShoppingCart,
+  LuHeart,
+  LuLogOut,
+  LuKey,
+} from 'react-icons/lu';
+import { getProfile } from '../api/profileApi.js';
 import EmissionCard from '../../../components/EmissionCard';
+// Orders data sample
+const orders = [
+  {
+    id: 1,
+    name: 'Raw Black T-Shirt Lineup',
+    date: '27 July 2023',
+    price: '$70.00',
+    status: 'Processing',
+    image: 'https://via.placeholder.com/50', // Image URL or local image
+  },
+  {
+    id: 2,
+    name: 'Monochromatic Wardrobe',
+    date: '9 March 2023',
+    price: '$27.00',
+    status: 'Completed',
+    image: 'https://via.placeholder.com/50',
+  },
+];
+
+// Custom TabPanel component
+const TabPanel = ({ children, value, index }) => {
+  return (
+    <div role="tabpanel" hidden={value !== index}>
+      {value === index && <Box sx={{ p: 1 }}>{children}</Box>}
+    </div>
+  );
+};
 
 const Profile = () => {
-  const [profile, setProfile] = useState({});
+  const [profile, setProfile] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -52,205 +70,225 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
-  if (loading) {
-    return <LinearProgress />;
-  }
+  const [value, setValue] = useState(0);
 
-  if (error) {
-    return <Typography color="error">Something went wrong!</Typography>;
-  }
+  const handleTabChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="lg" sx={{ mt: 2, mb: 2 }}>
       <Grid container spacing={3}>
-        {/* Profile Summary */}
-        <Grid item xs={12} md={4} lg={3}>
+        {/* Sidebar */}
+        <Grid item xs={12} md={3}>
           <Paper
-            elevation={3}
+            elevation={0}
             sx={{
-              p: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              position: 'relative',
-              bgcolor: 'background.paper',
+              boxShadow: 'none',
+              marginLeft: '-10px',
             }}
           >
-            {/* Edit Profile Button */}
-            <Box sx={{ position: 'absolute', top: 10, right: 20 }}>
-              <Tooltip title="Edit Profile" placement="top">
-                <IconButton>
-                  <MoreHorizOutlined color="text.secondary" />
-                </IconButton>
-              </Tooltip>
-            </Box>
-
-            {/* Avatar */}
-            <Avatar
+            <Tabs
+              orientation="vertical"
+              variant="standard"
+              indicatorColor="transparent"
+              value={value}
+              onChange={handleTabChange}
+              aria-label="profile sidebar"
               sx={{
-                width: 100,
-                height: 100,
-                mb: 2,
-                bgcolor: profile?.profileImg ? 'transparent' : 'success.main',
-                border: profile?.profileImg ? '2px solid' : 'none',
-                borderColor: 'primary.main',
+                borderRight: 1,
+                borderColor: 'divider',
+                minHeight: '100%',
+                padding: '12px',
+                color: 'text.secondary',
+                '& .Mui-selected': {
+                  backgroundColor: '#F6F6F6',
+                  color: 'priamry',
+                },
               }}
-              alt={profile?.username}
-              src={profile?.profileImg || undefined}
             >
-              {!profile?.profileImg && avatar}
-            </Avatar>
+              <Tab
+                disableRipple
+                label="Orders"
+                icon={<LuShoppingCart size={22} />}
+                iconPosition="start"
+                sx={{
+                  justifyContent: 'start',
+                  fontWeight: 'medium',
+                  gap: '5px',
+                }}
+              />
+              <Tab
+                disableRipple
+                label="Wishlist"
+                icon={<LuHeart size={22} />}
+                iconPosition="start"
+                sx={{
+                  justifyContent: 'start',
+                  fontWeight: 'medium',
+                  gap: '5px',
+                }}
+              />
+              <Tab
+                disableRipple
+                label="Address"
+                icon={<LuMapPin size={22} />}
+                iconPosition="start"
+                sx={{
+                  justifyContent: 'start',
+                  fontWeight: 'medium',
+                  gap: '5px',
+                }}
+              />
+              <Tab
+                disableRipple
+                label="Password"
+                icon={<LuKey size={22} />}
+                iconPosition="start"
+                sx={{
+                  justifyContent: 'start',
+                  fontWeight: 'medium',
+                  gap: '5px',
+                }}
+              />
+              <Tab
+                disableRipple
+                label="Account"
+                icon={<LuUserCircle size={22} />}
+                iconPosition="start"
+                sx={{
+                  justifyContent: 'start',
+                  fontWeight: 'medium',
+                  gap: '5px',
+                }}
+              />
+              <Tab
+                label="Logout"
+                icon={<LuLogOut size={22} />}
+                iconPosition="start"
+                sx={{
+                  justifyContent: 'start',
+                  fontWeight: 'medium',
+                  gap: '5px',
+                }}
+              />
+            </Tabs>
+          </Paper>
+        </Grid>
 
-            {/* Username */}
+        {/* Tab content */}
+        <Grid item xs={12} md={9}>
+          <TabPanel value={value} index={0}>
             <Typography variant="h6" gutterBottom>
-              {profile?.username}
+              Orders
             </Typography>
 
-            {/* User Role */}
-            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-              Eco Enthusiast
-            </Typography>
+            {/* Orders List */}
+            {orders.map((order) => (
+              <Paper
+                key={order.id}
+                elevation={1}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  p: 2,
+                  mb: 2,
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <img
+                    src={order.image}
+                    alt={order.name}
+                    style={{ width: 50, height: 50, marginRight: 16 }}
+                  />
+                  <Box>
+                    <Typography variant="body1" fontWeight="bold">
+                      {order.name}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Ordered On: {order.date}
+                    </Typography>
+                    <Typography variant="body2">{order.price}</Typography>
+                  </Box>
+                </Box>
 
-            {/* Eco Points */}
-            <Box display="flex" alignItems="center" sx={{ mt: 2 }}>
-              <Typography variant="h6" color="text.primary" mr={1}>
-                {profile?.ecoPoints || 0}
-              </Typography>
-              <PiLeafLight size={20} color="#4caf50" />
-            </Box>
-          </Paper>
-        </Grid>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: order.status === 'Completed' ? 'green' : 'orange',
+                      fontWeight: 'bold',
+                      mr: 2,
+                    }}
+                  >
+                    {order.status}
+                  </Typography>
+                  <Button variant="outlined" size="small">
+                    View item
+                  </Button>
+                </Box>
+              </Paper>
+            ))}
+          </TabPanel>
 
-        {/* Emission Card */}
-        <Grid item xs={12} md={6} lg={4}>
-          <EmissionCard
-            userName={profile?.username || 'User'}
-            totalEmission={profile?.totalEmission || 0}
-            emissionReduction={profile?.emissionReduction || 0}
-          />
-        </Grid>
+          <TabPanel value={value} index={1}>
+            <Typography variant="h6">Wishlist</Typography>
+            {/* Wishlist content */}
+          </TabPanel>
 
-        {/* Profile Information */}
-        <Grid item xs={12} md={8} lg={5}>
-          <Paper elevation={3} sx={{ p: 3, bgcolor: 'background.paper' }}>
-            <Typography variant="h6" gutterBottom color="text.primary">
-              Profile Information
-            </Typography>
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <EmailOutlined color="primary" />
-                </ListItemIcon>
-                <ListItemText primary="Email" secondary={profile?.email} />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <LocationOnOutlined color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Location"
-                  secondary={profile?.location || 'Portland, OR'}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <EmojiNatureOutlined color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Favorite Eco Category"
-                  secondary={
-                    profile?.favoriteEcoCategory || 'Organic Home & Garden'
-                  }
-                />
-              </ListItem>
-            </List>
-          </Paper>
-        </Grid>
+          <TabPanel value={value} index={2}>
+            <Typography variant="h6">Address</Typography>
+            {/* Address content */}
+          </TabPanel>
 
-        {/* Shopping Habits */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ p: 3, bgcolor: 'background.paper' }}>
-            <Typography variant="h6" gutterBottom color="text.primary">
-              Eco Shopping Habits
-            </Typography>
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <ShoppingBagOutlined color="success" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Total Eco Purchases"
-                  secondary={`${profile?.totalEcoPurchases || 0} items`}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <RecyclingOutlined color="success" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Plastic Saved"
-                  secondary={`Equivalent to ${
-                    profile?.plasticSaved || 0
-                  } plastic bottles`}
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <Co2Outlined color="success" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Carbon Footprint Reduced"
-                  secondary={`${profile?.carbonFootprintReduced || 0} kg CO2`}
-                />
-              </ListItem>
-            </List>
-          </Paper>
-        </Grid>
+          <TabPanel value={value} index={3}>
+            <Typography variant="h6">Password</Typography>
+            {/* Password content */}
+          </TabPanel>
 
-        {/* Sustainability Preferences */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ p: 3, bgcolor: 'background.paper' }}>
-            <Typography variant="h6" gutterBottom color="text.primary">
-              Sustainability Preferences
-            </Typography>
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <FavoriteOutlined color="error" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Favorite Eco Brands"
-                  secondary={
-                    profile?.favoriteEcoBrands ||
-                    'EcoWare, GreenLife, NaturalBliss'
-                  }
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <EmojiNatureOutlined color="success" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Eco Certifications Preferred"
-                  secondary={
-                    profile?.ecoCertificationsPreferred ||
-                    'Organic, Fair Trade, B Corp'
-                  }
-                />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <RecyclingOutlined color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Recycling Habits"
-                  secondary={
-                    profile?.recyclingHabits || 'Actively recycles and composts'
-                  }
-                />
-              </ListItem>
-            </List>
-          </Paper>
+          <TabPanel value={value} index={4}>
+            <Typography variant="h6">Account Detail</Typography>
+            {profile && (
+              <Grid container spacing={3} mt={1}>
+                <Grid item xs={12} md={6}>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      boxShadow: 'none',
+                      border: '1px solid #E5E5E5',
+                    }}
+                  >
+                    <Typography variant="h6" gutterBottom>
+                      Profile
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Username: {profile.username}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Email: {profile.email}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Phone Number: {profile.phone}
+                    </Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <EmissionCard
+                    userName={profile?.username || 'User'}
+                    totalEmission={profile?.totalEmission || 0}
+                    emissionReduction={profile?.emissionReduction || 0}
+                  />
+                </Grid>
+              </Grid>
+            )}
+          </TabPanel>
+
+          <TabPanel value={value} index={5}>
+            <Typography variant="h6">Logout</Typography>
+            {/* Logout functionality */}
+          </TabPanel>
         </Grid>
       </Grid>
     </Container>
