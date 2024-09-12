@@ -11,6 +11,10 @@ const CustomTab = styled(MuiTab)({
   borderRadius: '50px',
   marginRight: '10px',
   minHeight: '35px',
+  '&.Mui-selected': {
+    backgroundColor: '#447C5A',
+    color: '#ffff',
+  },
 });
 
 export default CustomTab;
