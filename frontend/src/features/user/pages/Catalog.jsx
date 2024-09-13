@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext, useEffect } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProducts } from '../../product/api.js';
 import {
@@ -102,7 +102,7 @@ const SideNav = () => {
               display: 'flex',
               gap: 1,
               alignItems: 'center',
-              p: 1,
+              py: 1,
               cursor: 'pointer',
               borderBottom: '1px solid #e0e0e0',
             }}
@@ -112,7 +112,7 @@ const SideNav = () => {
               onChange={() => toggleCategory(category.name)}
               size="small"
             />
-            <Typography variant="body2" fontWeight={500}>
+            <Typography variant="body2" fontSize={12} fontWeight={400}>
               {category.name}
             </Typography>
           </Box>
