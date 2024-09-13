@@ -46,99 +46,104 @@ function EcoFriendlyNavbar() {
     setHoveredCategory(null);
   };
 
+  if (!matches) return null;
+
   return (
-    <>
-      {matches ? (
-        <AppBar
-          position="static"
-          sx={{
-            p: 0,
-            mt: -3,
-            width: '100%',
-            minHeight: '50px',
-            border: '1px solid #e0e0e0',
-            borderRadius: 2,
-            borderTopLeftRadius: 0,
-            borderTopRightRadius: 0,
-          }}
-        >
-          <Toolbar
-            variant="regular"
-            sx={{
-              justifyContent: 'center',
-            }}
+    <AppBar
+      position="static"
+      sx={{
+        p: 0,
+        mt: -3,
+        width: '100%',
+        minHeight: '50px',
+        border: '1px solid #e0e0e0',
+        borderRadius: 2,
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
+      }}
+    >
+      <Toolbar
+        variant="regular"
+        sx={{
+          justifyContent: 'center',
+        }}
+      >
+        {categories.map((category, index) => (
+          <Box
+            key={index}
+            sx={{ position: 'relative' }}
+            onMouseEnter={(e) => handleMouseEnter(e, category)}
+            onMouseLeave={handleMouseLeave}
           >
-            {categories.map((category, index) => (
-              <Box
-                key={index}
-                sx={{ position: 'relative' }}
-                onMouseEnter={(e) => handleMouseEnter(e, category)}
-                onMouseLeave={handleMouseLeave}
-              >
-                <Button
-                  endIcon={<ArrowDropDownIcon />}
+            <Button
+              endIcon={<ArrowDropDownIcon />}
+              sx={{
+                color: '#000',
+                fontWeight: 'medium',
+                fontSize: '12px',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+            >
+              {category.name}
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={hoveredCategory === category}
+              onClose={handleMouseLeave}
+              MenuListProps={{
+                onMouseEnter: () => setHoveredCategory(category),
+                onMouseLeave: handleMouseLeave,
+              }}
+              PaperProps={{
+                sx: {
+                  backgroundColor: '#ffffff',
+                  color: '#000',
+                  borderRadius: '10px',
+                  marginTop: '10px',
+                  boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.1)',
+                },
+              }}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+            >
+              {category.subcategories.map((sub, subIndex) => (
+                <MenuItem
+                  key={subIndex}
+                  onClick={handleMouseLeave}
                   sx={{
-                    color: '#000',
-                    fontWeight: 'medium',
-                    fontSize: '12px',
+                    fontSize: '14px',
                     '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      backgroundColor: 'rgba(0, 0, 0, 0.04)',
                     },
                   }}
                 >
-                  {category.name}
-                </Button>
-                {hoveredCategory === category && (
-                  <Menu
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={handleMouseLeave}
-                    onMouseLeave={handleMouseLeave}
-                    MenuListProps={{
-                      onMouseLeave: handleMouseLeave,
-                    }}
-                    PaperProps={{
-                      sx: {
-                        backgroundColor: '#ffffff',
-                        color: '#000',
-                        borderRadius: '10px',
-                        marginTop: '10px',
-                      },
+                  <Link
+                    to={`/category/${sub.toLowerCase().replace(/ /g, '-')}`}
+                    style={{
+                      textDecoration: 'none',
+                      color: '#000',
+                      fontSize: '12px',
+                      width: '100%',
+                      padding: '8px 16px',
                     }}
                   >
-                    {category.subcategories.map((sub, subIndex) => (
-                      <MenuItem
-                        key={subIndex}
-                        onClick={handleMouseLeave}
-                        sx={{
-                          color: '#000',
-                          fontSize: '14px',
-                          display: 'flex',
-                          flexDirection: 'column',
-                        }}
-                      >
-                        <Link
-                          style={{
-                            textDecoration: 'none',
-                            cursor: 'pointer',
-                            color: '#000',
-                          }}
-                          to={`/category/${sub}`}
-                        >
-                          {sub}
-                        </Link>
-                      </MenuItem>
-                    ))}
-                  </Menu>
-                )}
-              </Box>
-            ))}
-          </Toolbar>
-        </AppBar>
-      ) : (
-        <div></div>
-      )}
-    </>
+                    {sub}
+                  </Link>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+        ))}
+      </Toolbar>
+    </AppBar>
   );
 }
 
