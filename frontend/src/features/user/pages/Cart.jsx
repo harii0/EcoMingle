@@ -1,9 +1,51 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Box, Grid, Typography, IconButton, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CloseIcon from '@mui/icons-material/Close';
+import { FiInbox } from 'react-icons/fi';
+
+const EmptyCart = () => {
+  return (
+    <Box
+      sx={{
+        height: '100%',
+        p: 10,
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+      }}
+    >
+      <FiInbox size={80} strokeWidth={1.5} color="#9e9e9e" />
+      <Typography
+        variant="h5"
+        sx={{ mt: 3, fontWeight: 'medium', color: 'text.secondary' }}
+      >
+        Your Cart is Empty!
+      </Typography>
+      <Typography
+        variant="body1"
+        sx={{ mt: 1, mb: 4, color: 'text.secondary' }}
+      >
+        Looks like you haven&apos;t added anything to your cart yet.
+      </Typography>
+      <Button
+        variant="contained"
+        sx={{
+          px: 2,
+          py: 1,
+        }}
+      >
+        Continue Shopping
+      </Button>
+    </Box>
+  );
+};
 
 const CartItem = ({ product, handleRemoveItem }) => {
   return (
@@ -21,13 +63,13 @@ const CartItem = ({ product, handleRemoveItem }) => {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <img
-          src={product.image}
-          alt={product.name}
+          src={product.ProductImage[0]}
+          alt={product.productName}
           style={{ width: 80, height: 80, objectFit: 'cover' }}
         />
         <Box>
           <Typography variant="subtitle1" fontWeight="medium ">
-            {product.name}
+            {product.productName}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Seller: {product.seller}
@@ -84,12 +126,29 @@ const OrderSummary = ({ subtotal, shipping, tax, total }) => {
       </Box>
       <Button
         variant="contained"
+        disableElevation
+        disableRipple
         fullWidth
-        sx={{ mt: 2, bgcolor: '#4caf50', '&:hover': { bgcolor: '#45a049' } }}
+        sx={{
+          mt: 2,
+          bgcolor: 'primary.main',
+          '&:hover': { bgcolor: '#45a049' },
+        }}
       >
         Checkout
       </Button>
-      <Button variant="text" fullWidth sx={{ mt: 1 }}>
+      <Button
+        disableElevation
+        disableRipple
+        variant="text"
+        fullWidth
+        sx={{
+          mt: 1,
+          '&:hover': {
+            bgcolor: 'transparent',
+          },
+        }}
+      >
         Continue Shopping
       </Button>
     </Box>
@@ -97,26 +156,9 @@ const OrderSummary = ({ subtotal, shipping, tax, total }) => {
 };
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'Raw Black T-Shirt Lineup',
-      price: 75.0,
-      image: '/path/to/black-tshirt.jpg',
-      seller: 'Seller 1',
-      size: 'M',
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: 'Essential Neutrals',
-      price: 22.0,
-      image: '/path/to/white-tshirt.jpg',
-      seller: 'Seller 1',
-      size: 'M',
-      quantity: 1,
-    },
-  ]);
+  const { items } = useSelector((state) => state.cart);
+
+  const [cartItems, setCartItems] = useState([...items]);
 
   const handleRemoveItem = (id) => {
     console.log(id);
@@ -131,7 +173,7 @@ const Cart = () => {
   const tax = 3.0;
   const total = subtotal + shipping + tax;
 
-  return (
+  return cartItems.length > 0 ? (
     <Grid container spacing={4} sx={{ p: 2 }} mt={1}>
       <Grid item xs={12} md={7}>
         <Typography variant="h5" gutterBottom>
@@ -154,6 +196,8 @@ const Cart = () => {
         />
       </Grid>
     </Grid>
+  ) : (
+    <EmptyCart />
   );
 };
 
