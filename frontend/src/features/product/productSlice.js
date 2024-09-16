@@ -21,7 +21,7 @@ export const getProductsThunk = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await getProducts();
-      return response.data;
+      return response.data.data.products;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
