@@ -1,20 +1,31 @@
+import React from 'react';
 import {
   Box,
   Typography,
-  Rating,
   Chip,
   Button,
   IconButton,
   Grid,
   Paper,
+  Skeleton,
+  Snackbar,
 } from '@mui/material';
-import { Add, Remove, Favorite, Share } from '@mui/icons-material';
+import { Add, Remove, Share, Star } from '@mui/icons-material';
+import { BiColorFill } from 'react-icons/bi';
+import { IoClose } from 'react-icons/io5';
+
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getProduct } from '../../product/api.js';
+import ProductCarousel from '../components/prodcutCarousel/ProductCarousel';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../cartSlice.js';
 
 const ProductPage = () => {
+  const dispatch = useDispatch();
+
   const [product, setProduct] = useState({});
+  const [open, setOpen] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -27,58 +38,218 @@ const ProductPage = () => {
     fetchProduct();
   }, []);
 
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const action = (
+    <React.Fragment>
+      <Button color="secondary" size="small" onClick={handleClose}>
+        UNDO
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <IoClose fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
   if (!product || !product.ProductImage || !product.productItems) {
-    return <div>Loading...</div>; // Show a loading state while fetching data
+    return (
+      <Box sx={{ maxWidth: 1200, mx: 'auto', p: 2 }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f5f5f5' }}>
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height="auto"
+                sx={{ paddingTop: '100%' }}
+              />
+            </Paper>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              {[1, 2, 3, 4].map((index) => (
+                <Skeleton
+                  key={index}
+                  variant="rectangular"
+                  width={60}
+                  height={60}
+                  sx={{ mx: 1 }}
+                />
+              ))}
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Skeleton variant="text" width="80%" height={40} sx={{ mb: 2 }} />{' '}
+            {/* Product Name */}
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Skeleton variant="text" width={120} height={24} /> {/* Rating */}
+              <Skeleton
+                variant="text"
+                width={100}
+                height={24}
+                sx={{ ml: 1 }}
+              />{' '}
+              {/* Review count */}
+              <Skeleton
+                variant="rectangular"
+                width={80}
+                height={24}
+                sx={{ ml: 2 }}
+              />{' '}
+              {/* Stock status */}
+            </Box>
+            <Skeleton variant="text" width="40%" height={32} sx={{ mb: 2 }} />{' '}
+            {/* Price */}
+            <Skeleton
+              variant="text"
+              width="60%"
+              height={24}
+              sx={{ mb: 1 }}
+            />{' '}
+            {/* AVAILABLE COLORS */}
+            <Box sx={{ mb: 2 }}>
+              {[1, 2, 3].map((index) => (
+                <Skeleton
+                  key={index}
+                  variant="circular"
+                  width={24}
+                  height={24}
+                  sx={{ mr: 1, display: 'inline-block' }}
+                />
+              ))}
+            </Box>
+            <Skeleton variant="text" width="40%" height={24} sx={{ mb: 1 }} />{' '}
+            {/* MATERIAL */}
+            <Box sx={{ mb: 2 }}>
+              {[1, 2, 3].map((index) => (
+                <Skeleton
+                  key={index}
+                  variant="circular"
+                  width={24}
+                  height={24}
+                  sx={{ mr: 1, display: 'inline-block' }}
+                />
+              ))}
+            </Box>
+            <Skeleton variant="text" width="40%" height={24} sx={{ mb: 1 }} />{' '}
+            {/* SELECT SIZE */}
+            <Box sx={{ mb: 2 }}>
+              {['S', 'M', 'X', 'XL', 'XXL'].map((size) => (
+                <Skeleton
+                  key={size}
+                  variant="rectangular"
+                  width={40}
+                  height={32}
+                  sx={{ mr: 1, display: 'inline-block' }}
+                />
+              ))}
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Skeleton variant="text" width={80} height={24} sx={{ mr: 2 }} />{' '}
+              {/* QUANTITY */}
+              <Skeleton variant="circular" width={32} height={32} />
+              <Skeleton variant="text" width={20} height={24} sx={{ mx: 2 }} />
+              <Skeleton variant="circular" width={32} height={32} />
+            </Box>
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height={48}
+              sx={{ mb: 2 }}
+            />{' '}
+            {/* Add to cart button */}
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <Skeleton variant="text" width="60%" height={20} />{' '}
+              {/* Shipping info */}
+              <Box>
+                <Skeleton
+                  variant="circular"
+                  width={40}
+                  height={40}
+                  sx={{ mr: 1, display: 'inline-block' }}
+                />
+                <Skeleton
+                  variant="circular"
+                  width={40}
+                  height={40}
+                  sx={{ display: 'inline-block' }}
+                />
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+    ); // Show a loading state while fetching data
   }
+
+  const inventoryCount = product.productItems[0].inventoryCount;
+
+  if (inventoryCount > 0) {
+  }
+  const Icons = [BiColorFill, BiColorFill, BiColorFill];
+
+  const handleAddToCart = () => {
+    dispatch(addToCart(product));
+    setOpen(true);
+  };
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: 2 }}>
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
-          <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f5f5f5' }}>
-            <Box
-              component="img"
-              src={product.ProductImage[0]}
-              alt="Raw Black T-Shirt"
-              sx={{ width: '100%', height: 'auto' }}
-            />
+          <Paper elevation={0} sx={{ p: 2, boxShadow: 'none' }}>
+            <ProductCarousel product={product} />
           </Paper>
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-            {product?.ProductImage?.map((item) => (
-              <Box
-                key={item}
-                component="img"
-                src={item}
-                alt={`Thumbnail ${item}`}
-                sx={{ width: 60, height: 60, mx: 1, cursor: 'pointer' }}
-              />
-            ))}
-          </Box>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Typography variant="h4" gutterBottom>
-            {product?.productName}
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Rating value={4.2} readOnly precision={0.1} />
-            <Typography variant="body2" sx={{ ml: 1 }}>
-              4.2 — 54 Reviews
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="h5" gutterBottom>
+              {product?.productName}
             </Typography>
+            <IconButton>
+              <Share />
+            </IconButton>
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Chip icon={<Star fontSize="small" />} label={'4.2 — 54 Reviews'} />
+
             {product.productItems[0].inventoryCount <= 0 ? (
               <Chip
+                variant="outlined"
                 label="OUT OF STOCK"
                 color="error"
                 size="small"
-                sx={{ ml: 2 }}
+                sx={{ ml: 2, borderRadius: '50px', fontSize: '12px' }}
               />
             ) : (
-              <Chip label="IN STOCK" size="small" sx={{ ml: 2 }} />
+              <Chip
+                variant="outlined"
+                label="IN STOCK"
+                size="small"
+                sx={{ ml: 2, borderRadius: '50px', fontSize: '12px' }}
+              />
             )}
           </Box>
-          <Typography variant="h5" gutterBottom>
+
+          <Typography variant="h6" gutterBottom>
             ${product.price}
           </Typography>
-          <Typography variant="subtitle1" gutterBottom>
+          <Typography variant="subtitle1" fontSize={12} gutterBottom>
             AVAILABLE COLORS
           </Typography>
           <Box sx={{ mb: 2 }}>
@@ -97,22 +268,22 @@ const ProductPage = () => {
               />
             ))}
           </Box>
-          <Typography variant="subtitle1" gutterBottom>
+          <Typography variant="subtitle1" fontSize={12} gutterBottom>
             MATERIAL
           </Typography>
           <Box sx={{ mb: 2 }}>
-            {['local_florist', 'pets', 'recycling'].map((icon) => (
+            {Icons.map((Icon, i) => (
               <Box
-                key={icon}
+                key={i}
                 component="span"
                 className="material-icons"
-                sx={{ mr: 1 }}
+                sx={{ mr: 1, gap: '2' }}
               >
-                {icon}
+                <Icon size={20} />
               </Box>
             ))}
           </Box>
-          <Typography variant="subtitle1" gutterBottom>
+          <Typography variant="subtitle1" fontSize={12} gutterBottom>
             SELECT SIZE
           </Typography>
           <Box sx={{ mb: 2 }}>
@@ -120,30 +291,52 @@ const ProductPage = () => {
               <Button
                 key={size}
                 variant="outlined"
-                sx={{ mr: 1, mb: 1, minWidth: 'auto' }}
+                size="small"
+                sx={{ mr: 1, minWidth: 'auto' }}
               >
                 {size}
               </Button>
             ))}
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Typography variant="subtitle1" sx={{ mr: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              mb: 2,
+            }}
+          >
+            <Typography variant="subtitle1" fontSize={12} sx={{ mr: 2 }}>
               QUANTITY
             </Typography>
-            <IconButton size="small">
-              <Remove />
-            </IconButton>
-            <Typography sx={{ mx: 2 }}>1</Typography>
-            <IconButton size="small">
-              <Add />
-            </IconButton>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid #3333',
+                borderRadius: '5px',
+                gap: 1,
+                width: '120px',
+              }}
+            >
+              <IconButton size="small">
+                <Remove />
+              </IconButton>
+              <Typography sx={{ mx: 2 }}>1</Typography>
+              <IconButton size="small">
+                <Add />
+              </IconButton>
+            </Box>
           </Box>
           <Button
+            onClick={handleAddToCart}
             variant="contained"
+            disableElevation
             fullWidth
             sx={{
               mb: 2,
-              backgroundColor: '#4CAF50',
+              backgroundColor: 'primary.main',
+              fontWeight: '500',
               '&:hover': { backgroundColor: '#45a049' },
             }}
           >
@@ -159,17 +352,16 @@ const ProductPage = () => {
             <Typography variant="body2">
               — FREE SHIPPING ON ORDERS $100+
             </Typography>
-            <Box>
-              <IconButton>
-                <Favorite />
-              </IconButton>
-              <IconButton>
-                <Share />
-              </IconButton>
-            </Box>
           </Box>
         </Grid>
       </Grid>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        message={`${product.productName} Added to Cart`}
+        action={action}
+      />
     </Box>
   );
 };
