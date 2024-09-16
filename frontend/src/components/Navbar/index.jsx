@@ -9,7 +9,13 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
-import { LuShoppingCart, LuUserCircle, LuSearch } from 'react-icons/lu';
+import {
+  LuShoppingCart,
+  LuUserCircle,
+  LuSearch,
+  LuHeart,
+  LuShoppingBag,
+} from 'react-icons/lu';
 import { Search, StyledInputBase } from './navbar.style';
 import logo from '../../assets/images/logo.svg';
 import { Button } from '@mui/material';
@@ -18,6 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../features/auth/authSlice.js';
 import { useDispatch } from 'react-redux';
 export default function PrimarySearchAppBar() {
+  const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -227,51 +234,57 @@ export default function PrimarySearchAppBar() {
             }}
           >
             <Box
-              sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+              sx={{
+                display: { xs: 'none', md: 'flex' },
+                gap: 1,
+                alignItems: 'center',
+              }}
             >
-              {isAuthenticated ? (
-                <>
-                  <IconButton
-                    size="large"
-                    aria-label="show 4 new mails"
-                    color="inherit"
-                    disableRipple
-                  >
-                    <Badge badgeContent={4} color="primary">
-                      <LuShoppingCart fontSize={24} strokeWidth={1.5} />
-                    </Badge>
-                  </IconButton>
-
-                  <IconButton
-                    size="large"
-                    edge="end"
-                    aria-label="account of current user"
-                    aria-controls={menuId}
-                    aria-haspopup="true"
-                    onClick={handleProfileMenuOpen}
-                    color="inherit"
-                    disableRipple
-                  >
-                    <LuUserCircle fontSize={24} strokeWidth={1.5} />
-                  </IconButton>
-                </>
-              ) : (
-                <Button
-                  sx={{
-                    color: 'white',
-                    width: '80px',
-                    height: '35px',
-                    textTransform: 'none',
-                    borderRadius: '50px',
-                  }}
-                  disableElevation
-                  variant="contained"
+              <>
+                <IconButton
+                  size="large"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={
+                    isAuthenticated
+                      ? () => navigate('/wishlist')
+                      : () => navigate('/login')
+                  }
+                  color="inherit"
                   disableRipple
-                  onClick={() => navigate('/login')}
                 >
-                  Login
-                </Button>
-              )}
+                  <LuHeart fontSize={22} strokeWidth={1.5} />
+                </IconButton>
+                <IconButton
+                  size="large"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                  disableRipple
+                >
+                  <LuUserCircle fontSize={22} strokeWidth={1.5} />
+                </IconButton>
+                <IconButton
+                  size="large"
+                  aria-label="show 4 new mails"
+                  color="inherit"
+                  disableRipple
+                  onClick={() => navigate('/cart')}
+                >
+                  <Badge
+                    size="small"
+                    badgeContent={items.length}
+                    color="primary"
+                  >
+                    <LuShoppingBag fontSize={22} strokeWidth={1.5} />
+                  </Badge>
+                </IconButton>
+              </>
             </Box>
 
             <IconButton
