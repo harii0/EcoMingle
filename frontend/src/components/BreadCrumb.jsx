@@ -22,10 +22,11 @@ const BreadCrumbs = (props) => {
   return (
     <MuiBreadCrumbs
       aria-label="breadcrumb"
-      separator={<LuDot />}
+      separator={'>'}
       sx={{
         width: '100%',
         py: 1,
+        px: 3,
         backgroundColor: '#ffffff',
       }}
     >
