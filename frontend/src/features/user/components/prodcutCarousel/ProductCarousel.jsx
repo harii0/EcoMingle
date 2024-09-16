@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Box } from '@mui/material';
-import 'product.css';
+import './productCarousel.css';
 
 const ProductCarousel = ({ product }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -34,13 +34,13 @@ const ProductCarousel = ({ product }) => {
 
   return (
     <Box>
-      <Box className="embla" sx={{ overflow: 'hidden' }}>
-        <Box className="embla__viewport" ref={mainViewportRef}>
-          <Box className="embla__container" sx={{ display: 'flex' }}>
+      <Box className="embla_main" sx={{ overflow: 'hidden' }}>
+        <Box className="embla__main__viewport" ref={mainViewportRef}>
+          <Box className="embla__main__container" sx={{ display: 'flex' }}>
             {product.ProductImage.map((image, index) => (
               <Box
                 key={index}
-                className="embla__slide"
+                className="embla__main__slide"
                 sx={{
                   flex: '0 0 100%',
                   minWidth: 0,
