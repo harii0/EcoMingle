@@ -89,6 +89,7 @@ function EcoFriendlyNavbar() {
               {category.name}
             </Button>
             <Menu
+              disableAutoFocusItem
               anchorEl={anchorEl}
               open={hoveredCategory === category}
               onClose={handleMouseLeave}
