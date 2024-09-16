@@ -1,6 +1,7 @@
 import { useState, createContext, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProducts } from '../../product/api.js';
+// import { getProducts } from '../../product/api.js';
+import { getProductsThunk } from '../../product/productSlice.js';
 import {
   Box,
   Card,
@@ -19,6 +20,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { IoIosArrowDown } from 'react-icons/io';
+import { useDispatch, useSelector } from 'react-redux';
 
 // Sample Data
 const Categories = [
@@ -45,27 +47,18 @@ const useCatalog = () => {
 
 // Custom hook for products
 const useProducts = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { products } = useSelector((state) => state.product);
 
   const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const response = await getProducts();
-      setProducts(response.data.data.products);
-    } catch (err) {
-      setError('Failed to fetch products');
-    } finally {
-      setLoading(false);
-    }
+    dispatch(getProductsThunk());
   };
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  return { products, loading, error, refetch: fetchProducts };
+  return { products, refetch: fetchProducts };
 };
 
 // Sidebar for Filters
