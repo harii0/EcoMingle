@@ -236,12 +236,18 @@ const addToCart = asyncHandler(async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(productId)) {
     throw new ApiError(400, 'Invalid product ID');
   }
+
   let cart = await Cart.findOne({ user: userId });
 
   if (!cart) {
     cart = new Cart({
       user: userId,
-      items: [{ productItem: productId, quantity }],
+      items: [
+        {
+          productItem: productId,
+          quantity,
+        },
+      ],
     });
   } else {
     const itemIndex = cart.items.findIndex(
@@ -251,21 +257,18 @@ const addToCart = asyncHandler(async (req, res) => {
     if (itemIndex > -1) {
       cart.items[itemIndex].quantity += quantity;
     } else {
-      cart.items.push({ productItem: productId, quantity });
+      cart.items.push({
+        productItem: productId,
+        quantity,
+      });
     }
   }
 
   await cart.save();
 
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    { cart: cart._id },
-    { new: true },
-  ).populate('cart');
+  await cart.populate('items.productItem');
 
-  return res.json(
-    new ApiResponse(200, { updatedUser }, 'Product added to cart'),
-  );
+  return res.json(new ApiResponse(200, { cart }, 'Product added to cart'));
 });
 
 const removeFromCart = asyncHandler(async (req, res) => {
