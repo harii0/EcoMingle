@@ -10,7 +10,8 @@ import {
   Skeleton,
   Snackbar,
 } from '@mui/material';
-import { Add, Remove, Share, Star } from '@mui/icons-material';
+import { Add, Remove, Star } from '@mui/icons-material';
+import { LuShare2 } from 'react-icons/lu';
 import { BiColorFill } from 'react-icons/bi';
 import { IoClose } from 'react-icons/io5';
 
@@ -25,6 +26,7 @@ const ProductPage = () => {
   const dispatch = useDispatch();
 
   const [product, setProduct] = useState({});
+  const [quantity, setQuantity] = useState(1);
   const [open, setOpen] = useState(false);
   const { id } = useParams();
 
@@ -203,7 +205,12 @@ const ProductPage = () => {
   const Icons = [BiColorFill, BiColorFill, BiColorFill];
 
   const handleAddToCart = () => {
-    dispatch(addToCart(product));
+    const data = {
+      productId: product._id,
+      quantity: quantity,
+    };
+
+    dispatch(addToCart(data));
     setOpen(true);
   };
 
@@ -221,7 +228,7 @@ const ProductPage = () => {
               {product?.productName}
             </Typography>
             <IconButton>
-              <Share />
+              <LuShare2 />
             </IconButton>
           </Box>
 
@@ -320,11 +327,21 @@ const ProductPage = () => {
               }}
             >
               <IconButton size="small">
-                <Remove />
+                <Remove
+                  onClick={() =>
+                    setQuantity((prevQuantity) =>
+                      prevQuantity > 1 ? prevQuantity - 1 : 1,
+                    )
+                  }
+                />
               </IconButton>
-              <Typography sx={{ mx: 2 }}>1</Typography>
+              <Typography sx={{ mx: 2 }}>{quantity}</Typography>
               <IconButton size="small">
-                <Add />
+                <Add
+                  onClick={() =>
+                    setQuantity((prevQuantity) => prevQuantity + 1)
+                  }
+                />
               </IconButton>
             </Box>
           </Box>
