@@ -9,11 +9,9 @@ const initialState = {
 
 export const getFromCart = createAsyncThunk(
   'cart/getFromCart',
-  async ({ rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const response = await getCart();
-      console.log(response);
-
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -53,8 +51,15 @@ const cartSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getFromCart.fulfilled, (state, action) => {
-      state.items = action.payload;
-      console.log(action.payload);
+      state.items = action.payload.data.cart?.items?.map((item) => ({
+        ...item,
+        productItem: item.productItem
+          ? {
+              ...item,
+              productImage: item.ProductImage || item.productImage || [],
+            }
+          : null,
+      }));
     });
     builder.addCase(addToCart.pending, (state) => {
       state.status = 'pending';
@@ -89,9 +94,9 @@ export const { clearCart } = cartSlice.actions;
 
 export default cartSlice;
 
-export const selectCartItems = (state) => state.cart.items;
+export const selectCartItems = (state) => state.cart?.items;
 export const selectCartTotal = (state) =>
-  state.cart.items.reduce(
+  state.cart.items?.reduce(
     (total, item) =>
       total + (item.productItem ? item.productItem.price * item.quantity : 0),
     0,
