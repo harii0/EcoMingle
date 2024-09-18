@@ -10,6 +10,7 @@ import {
   getUserProfile,
   getUserWhislist,
   rateProduct,
+  getUserCart,
 } from '../controllers/user.controller.js';
 import { verifyJwt } from '../../../middleware/auth.middleware.js';
 import { verifyResetToken } from '../../../middleware/auth.middleware.js';
@@ -33,13 +34,14 @@ router.patch('/update', verifyJwt, upload.single('avatar'), updateUser);
 router.post('/logout', verifyJwt, logoutUser);
 router.get('/profile', verifyJwt, getUserProfile);
 router.get('/wishlist', verifyJwt, getUserWhislist);
+router.get('/cart', verifyJwt, getUserCart);
 router.post('/orders/ratings/:pId', verifyJwt, rateProduct);
 
 //products
 router.get('/products/:id', getProductById);
 router.get('/category', verifyJwt, getProductsByCategory);
 router.put('/wishlist', verifyJwt, addToWishlist);
-router.get('/cart', verifyJwt);
+router.get('/cart', verifyJwt, getUserCart);
 router.put('/cart', verifyJwt, addToCart);
 router.delete('/cart', verifyJwt, removeFromCart);
 
