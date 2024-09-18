@@ -278,7 +278,7 @@ export default function PrimarySearchAppBar() {
                 >
                   <Badge
                     size="small"
-                    badgeContent={items.length}
+                    badgeContent={items?.length}
                     color="primary"
                   >
                     <LuShoppingBag fontSize={22} strokeWidth={1.5} />
