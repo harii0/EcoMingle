@@ -1,13 +1,21 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Box, Grid, Typography, IconButton, Button } from '@mui/material';
+import {
+  removeFromCart,
+  selectCartItems,
+  selectCartTotal,
+  getFromCart,
+} from '../cartSlice';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CloseIcon from '@mui/icons-material/Close';
 import { FiInbox } from 'react-icons/fi';
+import { useEffect } from 'react';
 
 const EmptyCart = () => {
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -40,6 +48,7 @@ const EmptyCart = () => {
           px: 2,
           py: 1,
         }}
+        onClick={() => navigate('/')}
       >
         Continue Shopping
       </Button>
@@ -47,7 +56,11 @@ const EmptyCart = () => {
   );
 };
 
-const CartItem = ({ product, handleRemoveItem }) => {
+const CartItem = ({ item, handleRemoveItem, handleUpdateQuantity }) => {
+  const product = item;
+
+  if (!product) return null;
+
   return (
     <Box
       sx={{
@@ -63,12 +76,12 @@ const CartItem = ({ product, handleRemoveItem }) => {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <img
-          src={product.ProductImage[0]}
+          src={product.productImage}
           alt={product.productName}
           style={{ width: 80, height: 80, objectFit: 'cover' }}
         />
         <Box>
-          <Typography variant="subtitle1" fontWeight="medium ">
+          <Typography variant="subtitle1" fontWeight="medium">
             {product.productName}
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -76,24 +89,31 @@ const CartItem = ({ product, handleRemoveItem }) => {
           </Typography>
         </Box>
       </Box>
-      <Typography variant="subtitle1">${product.price.toFixed(2)}</Typography>
+      <Typography variant="subtitle1">${product.price}</Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <IconButton size="small">
+        <IconButton
+          size="small"
+          onClick={() => handleUpdateQuantity(product._id, item.quantity - 1)}
+        >
           <RemoveIcon />
         </IconButton>
-        <Typography>{product.quantity}</Typography>
-        <IconButton size="small">
+        <Typography>{item.quantity}</Typography>
+        <IconButton
+          size="small"
+          onClick={() => handleUpdateQuantity(product._id, item.quantity + 1)}
+        >
           <AddIcon />
         </IconButton>
       </Box>
-      <IconButton>
-        <CloseIcon onClick={() => handleRemoveItem(product.id)} />
+      <IconButton onClick={() => handleRemoveItem(product._id)}>
+        <CloseIcon />
       </IconButton>
     </Box>
   );
 };
 
 const OrderSummary = ({ subtotal, shipping, tax, total }) => {
+  const navigate = useNavigate();
   return (
     <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1 }}>
       <Typography variant="h6" gutterBottom>
@@ -134,6 +154,7 @@ const OrderSummary = ({ subtotal, shipping, tax, total }) => {
           bgcolor: 'primary.main',
           '&:hover': { bgcolor: '#45a049' },
         }}
+        onClick={() => navigate('/cart/checkout')}
       >
         Checkout
       </Button>
@@ -156,24 +177,22 @@ const OrderSummary = ({ subtotal, shipping, tax, total }) => {
 };
 
 const Cart = () => {
-  const { items } = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
+  const cartTotal = useSelector(selectCartTotal);
+  useEffect(() => {
+    if (cartItems?.length == 0) dispatch(getFromCart());
+  }, [dispatch, cartItems?.length]);
 
-  const [cartItems, setCartItems] = useState([...items]);
-
-  const handleRemoveItem = (id) => {
-    console.log(id);
-    const updatedCartItems = cartItems.filter((item) => item.id !== id);
-    setCartItems(updatedCartItems);
+  const handleRemoveItem = (productId) => {
+    dispatch(removeFromCart(productId));
   };
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
-  const shipping = 0; // Free shipping
-  const tax = 3.0;
-  const total = subtotal + shipping + tax;
 
-  return cartItems.length > 0 ? (
+  const shipping = 0; // Free shipping
+  const tax = cartTotal * 0.1; // Assume 10% tax
+  const total = cartTotal + shipping + tax;
+
+  return cartItems?.length > 0 ? (
     <Grid container spacing={4} sx={{ p: 2 }} mt={1}>
       <Grid item xs={12} md={7}>
         <Typography variant="h5" gutterBottom>
@@ -181,15 +200,15 @@ const Cart = () => {
         </Typography>
         {cartItems.map((item) => (
           <CartItem
-            key={item.id}
-            product={item}
+            key={item.productItem}
+            item={item}
             handleRemoveItem={handleRemoveItem}
           />
         ))}
       </Grid>
       <Grid item xs={12} md={5}>
         <OrderSummary
-          subtotal={subtotal}
+          subtotal={cartTotal}
           shipping={shipping}
           tax={tax}
           total={total}
