@@ -11,6 +11,7 @@ import NotFound from '../components/NotFound';
 import Catalog from '../features/user/pages/Catalog';
 import ProductPage from '../features/user/pages/Product';
 import Cart from '../features/user/pages/Cart';
+import Checkout from '../features/user/pages/Checkout';
 
 const AppRoutes = () => {
   return (
@@ -22,6 +23,7 @@ const AppRoutes = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<Dashboard />} />
       <Route path="/profile" element={<ProtectedRoute element={Profile} />} />
+      <Route path="/cart/checkout" element={<Checkout />} />
       <Route path="/product/:id" element={<ProductPage />} />
       <Route path="/catalog" element={<Catalog />} />
       <Route path="/cart" element={<Cart />} />
