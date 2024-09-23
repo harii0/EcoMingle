@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -18,7 +18,6 @@ import {
 } from 'react-icons/lu';
 import { Search, StyledInputBase } from './navbar.style';
 import logo from '../../assets/images/logo.svg';
-import { Button } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../features/auth/authSlice.js';
@@ -31,6 +30,11 @@ export default function PrimarySearchAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [search, setSearch] = useState('');
+  const [cartCount, setCartCount] = useState(items.length);
+
+  useEffect(() => {
+    setCartCount(items.length);
+  }, [items]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -106,7 +110,7 @@ export default function PrimarySearchAppBar() {
       <MenuItem disableRipple>
         <IconButton size="medium" aria-label="show 4 new mails" color="inherit">
           <Badge
-            badgeContent={4}
+            badgeContent={cartCount}
             color="error"
             sx={{ '& .MuiBadge-badge': { fontSize: '10px' } }}
           >
@@ -122,7 +126,7 @@ export default function PrimarySearchAppBar() {
           color="inherit"
         >
           <Badge
-            badgeContent={17}
+            badgeContent={cartCount}
             color="error"
             sx={{ '& .MuiBadge-badge': { fontSize: '10px' } }}
           >
@@ -276,11 +280,7 @@ export default function PrimarySearchAppBar() {
                   disableRipple
                   onClick={() => navigate('/cart')}
                 >
-                  <Badge
-                    size="small"
-                    badgeContent={items?.length}
-                    color="primary"
-                  >
+                  <Badge size="small" badgeContent={cartCount} color="primary">
                     <LuShoppingBag fontSize={22} strokeWidth={1.5} />
                   </Badge>
                 </IconButton>
