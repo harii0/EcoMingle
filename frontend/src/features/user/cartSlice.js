@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { addcart, getCart, removeCart } from './api/cartApi';
 const initialState = {
-  items: [],
+  items: JSON.parse(localStorage.getItem('cartItems')) || [],
   status: '',
   loading: false,
   error: false,
@@ -60,6 +60,7 @@ const cartSlice = createSlice({
             }
           : null,
       }));
+      localStorage.setItem('cartItems', JSON.stringify(state.items));
     });
     builder.addCase(addToCart.pending, (state) => {
       state.status = 'pending';
