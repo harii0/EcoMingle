@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { login, logout, register } from './api';
+import { getFromCart } from '../user/cartSlice';
 import TokenService from '../../services/auth.service';
 
 const initialState = {
-  user: localStorage.getItem('user') || null,
-  isAuthenticated: false || localStorage.getItem('user') ? true : false,
+  user: TokenService.getUser('user') || null,
+  isAuthenticated: TokenService.getUser('user') || false,
   status: 'idle',
   error: null,
   helperText: '',
@@ -25,10 +26,11 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async (data, { rejectWithValue }) => {
+  async (data, { rejectWithValue, dispatch }) => {
     try {
       const response = await login(data);
       TokenService.setUser(response?.data);
+      dispatch(getFromCart());
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -42,7 +44,9 @@ export const logoutUser = createAsyncThunk(
     try {
       await logout();
       TokenService.removeUser('user');
+      TokenService.removeUser('cartItems');
     } catch (error) {
+      TokenService.removeUser('user');
       return rejectWithValue(error.response.data);
     }
   },
