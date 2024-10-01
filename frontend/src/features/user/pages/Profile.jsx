@@ -7,6 +7,7 @@ import {
   Paper,
   Tab,
   Tabs,
+  TextField,
   Typography,
 } from '@mui/material';
 
@@ -20,6 +21,7 @@ import {
 } from 'react-icons/lu';
 import { getProfile } from '../api/profileApi.js';
 import EmissionCard from '../../../components/EmissionCard';
+import { getWishlist } from '../api/wishlistApi.js';
 // Orders data sample
 const orders = [
   {
@@ -51,6 +53,7 @@ const TabPanel = ({ children, value, index }) => {
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
+  const [wishlist, setWhishlist] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -74,6 +77,15 @@ const Profile = () => {
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const whishlistHandler = async () => {
+    try {
+      const response = await getWishlist();
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -109,6 +121,17 @@ const Profile = () => {
             >
               <Tab
                 disableRipple
+                label="Account"
+                icon={<LuUserCircle size={22} />}
+                iconPosition="start"
+                sx={{
+                  justifyContent: 'start',
+                  fontWeight: 'medium',
+                  gap: '5px',
+                }}
+              />
+              <Tab
+                disableRipple
                 label="Orders"
                 icon={<LuShoppingCart size={22} />}
                 iconPosition="start"
@@ -119,6 +142,7 @@ const Profile = () => {
                 }}
               />
               <Tab
+                onClick={whishlistHandler}
                 disableRipple
                 label="Wishlist"
                 icon={<LuHeart size={22} />}
@@ -151,34 +175,13 @@ const Profile = () => {
                   gap: '5px',
                 }}
               />
-              <Tab
-                disableRipple
-                label="Account"
-                icon={<LuUserCircle size={22} />}
-                iconPosition="start"
-                sx={{
-                  justifyContent: 'start',
-                  fontWeight: 'medium',
-                  gap: '5px',
-                }}
-              />
-              <Tab
-                label="Logout"
-                icon={<LuLogOut size={22} />}
-                iconPosition="start"
-                sx={{
-                  justifyContent: 'start',
-                  fontWeight: 'medium',
-                  gap: '5px',
-                }}
-              />
             </Tabs>
           </Paper>
         </Grid>
 
         {/* Tab content */}
         <Grid item xs={12} md={9}>
-          <TabPanel value={value} index={0}>
+          <TabPanel value={value} index={1}>
             <Typography variant="h6" gutterBottom>
               Orders
             </Typography>
@@ -232,22 +235,27 @@ const Profile = () => {
             ))}
           </TabPanel>
 
-          <TabPanel value={value} index={1}>
+          <TabPanel value={value} index={2}>
             <Typography variant="h6">Wishlist</Typography>
             {/* Wishlist content */}
           </TabPanel>
 
-          <TabPanel value={value} index={2}>
+          <TabPanel value={value} index={3}>
             <Typography variant="h6">Address</Typography>
             {/* Address content */}
           </TabPanel>
 
-          <TabPanel value={value} index={3}>
+          <TabPanel value={value} index={4}>
             <Typography variant="h6">Password</Typography>
-            {/* Password content */}
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField />
+                <TextField />
+              </Grid>
+            </Grid>
           </TabPanel>
 
-          <TabPanel value={value} index={4}>
+          <TabPanel value={value} index={0}>
             <Typography variant="h6">Account Detail</Typography>
             {profile && (
               <Grid container spacing={3} mt={1}>
@@ -257,6 +265,9 @@ const Profile = () => {
                     sx={{
                       p: 2,
                       boxShadow: 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 1,
                       border: '1px solid #E5E5E5',
                     }}
                   >
@@ -283,11 +294,6 @@ const Profile = () => {
                 </Grid>
               </Grid>
             )}
-          </TabPanel>
-
-          <TabPanel value={value} index={5}>
-            <Typography variant="h6">Logout</Typography>
-            {/* Logout functionality */}
           </TabPanel>
         </Grid>
       </Grid>
