@@ -97,7 +97,7 @@ const CartItem = ({ item, handleRemoveItem, handleUpdateQuantity }) => {
         >
           <RemoveIcon />
         </IconButton>
-        <Typography>{item.quantity}</Typography>
+        <Typography>{product.quantity}</Typography>
         <IconButton
           size="small"
           onClick={() => handleUpdateQuantity(product._id, item.quantity + 1)}
@@ -179,13 +179,15 @@ const OrderSummary = ({ subtotal, shipping, tax, total }) => {
 const Cart = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
+  console.log(cartItems);
+
   const cartTotal = useSelector(selectCartTotal);
   useEffect(() => {
     if (cartItems?.length == 0) dispatch(getFromCart());
   }, [dispatch, cartItems?.length]);
 
   const handleRemoveItem = (productId) => {
-    dispatch(removeFromCart(productId));
+    dispatch(removeFromCart({ productId }));
   };
 
   const shipping = 0; // Free shipping
@@ -202,7 +204,9 @@ const Cart = () => {
           <CartItem
             key={item.productItem}
             item={item}
-            handleRemoveItem={handleRemoveItem}
+            handleRemoveItem={() =>
+              handleRemoveItem(item.productItem.productItem)
+            }
           />
         ))}
       </Grid>
