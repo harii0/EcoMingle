@@ -1,4 +1,6 @@
 import api from './api';
+import store from '../redux/store';
+import { logoutUser } from '../features/auth/authSlice';
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -54,6 +56,7 @@ api.interceptors.response.use(
         processQueue(_error, null);
         api.defaults.headers.common['Authorization'] = null;
         console.log(_error);
+        store.dispatch(logoutUser());
         return Promise.reject(_error);
       } finally {
         isRefreshing = false;
