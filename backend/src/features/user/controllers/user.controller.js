@@ -3,6 +3,7 @@ import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import uploadFile from '../../../utils/cloudinary.js';
 import User from '../models/user.model.js';
+import Cart from '../models/cart.model.js';
 import asyncHandler from '../../../utils/asyncHandler.js';
 import { ApiError } from '../../../utils/ApiError.js';
 import { ApiResponse } from '../../../utils/ApiResponse.js';
@@ -36,10 +37,12 @@ const registerUser = asyncHandler(async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
+      maxAge: 15 * 60 * 1000,
     };
     const refreshOptions = {
       httpOnly: true,
       secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     };
     return res
       .status(201)
@@ -81,10 +84,12 @@ const loginUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: true,
+    maxAge: 15 * 60 * 1000,
   };
   const refreshOptions = {
     httpOnly: true,
     secure: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
     // path: '/refresh_token',
   };
   return res
@@ -109,24 +114,28 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 //logout user
 const logoutUser = asyncHandler(async (req, res) => {
-  const loggedOutUser = await User.findByIdAndUpdate(
-    req.user.id,
-    {
-      $set: {
-        refreshToken: null,
+  try {
+    const loggedOutUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        $set: {
+          refreshToken: null,
+        },
       },
-    },
-    { new: true },
-  );
+      { new: true },
+    );
 
-  const options = {
-    httpOnly: true,
-  };
-  return res
-    .status(200)
-    .clearCookie('accessToken', options)
-    .clearCookie('refreshToken')
-    .json(new ApiResponse(200, {}, 'Logged out successfully'));
+    const options = {
+      httpOnly: true,
+    };
+    return res
+      .status(200)
+      .clearCookie('accessToken', options)
+      .clearCookie('refreshToken')
+      .json(new ApiResponse(200, {}, 'Logged out successfully'));
+  } catch (error) {
+    return res.status(500).json(new ApiResponse(500, {}, 'Logout failed'));
+  }
 });
 //refreshToken
 const refreshToken = asyncHandler(async (req, res) => {
@@ -148,11 +157,13 @@ const refreshToken = asyncHandler(async (req, res) => {
     const options = {
       httpOnly: true,
       secure: true,
+      maxAge: 15 * 60 * 1000,
     };
     const refreshToken = user.generateRefreshToken();
     const refreshOptions = {
       httpOnly: true,
       secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       // path: '/refresh_token',
     };
     user.refreshToken = refreshToken;
@@ -181,9 +192,7 @@ const updateUser = asyncHandler(async (req, res) => {
     if (user.avatar) {
       const publicId = 'uploads/' + user.avatar.split('/').pop().split('.')[0];
 
-      await cloudinary.uploader.destroy(publicId, () => {
-        console.log('deleted');
-      });
+      await cloudinary.uploader.destroy(publicId, () => {});
     }
     const result = await uploadFile(avatar);
 
@@ -257,6 +266,16 @@ const getUserProfile = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, { profile }, 'Profile'));
 });
 
+const getUserCart = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  if (!userId) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  const cart = await Cart.findOne({ user: userId });
+
+  return res.status(200).json(new ApiResponse(200, { cart }, 'cart'));
+});
 //get wishlist
 const getUserWhislist = asyncHandler(async (req, res) => {
   const userId = req.user.id;
@@ -326,4 +345,5 @@ export {
   resetPassword,
   getUserWhislist,
   rateProduct,
+  getUserCart,
 };
