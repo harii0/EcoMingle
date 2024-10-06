@@ -32,7 +32,7 @@ app.use((err, req, res, next) => {
   if (err instanceof ApiError) {
     res.status(err.status).json({ message: err.message });
   } else {
-    res.status(400).json({ message: err.message });
+    res.status(401).json({ message: err.message });
   }
 });
 
