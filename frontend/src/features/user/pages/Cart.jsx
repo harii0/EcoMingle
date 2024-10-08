@@ -93,19 +93,31 @@ const CartItem = ({ item, handleRemoveItem, handleUpdateQuantity }) => {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <IconButton
           size="small"
-          onClick={() => handleUpdateQuantity(product._id, item.quantity - 1)}
+          onClick={() =>
+            handleUpdateQuantity(
+              product.productItem.productItem,
+              item.quantity - 1,
+            )
+          }
         >
           <RemoveIcon />
         </IconButton>
         <Typography>{product.quantity}</Typography>
         <IconButton
           size="small"
-          onClick={() => handleUpdateQuantity(product._id, item.quantity + 1)}
+          onClick={() =>
+            handleUpdateQuantity(
+              product.productItem.productItem,
+              item.quantity + 1,
+            )
+          }
         >
           <AddIcon />
         </IconButton>
       </Box>
-      <IconButton onClick={() => handleRemoveItem(product._id)}>
+      <IconButton
+        onClick={() => handleRemoveItem(product.productItem.productItem)}
+      >
         <CloseIcon />
       </IconButton>
     </Box>
