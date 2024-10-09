@@ -191,7 +191,6 @@ const OrderSummary = ({ subtotal, shipping, tax, total }) => {
 const Cart = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
-  console.log(cartItems);
 
   const cartTotal = useSelector(selectCartTotal);
   useEffect(() => {
@@ -199,7 +198,7 @@ const Cart = () => {
   }, [dispatch, cartItems?.length]);
 
   const handleRemoveItem = (productId) => {
-    dispatch(removeFromCart({ productId }));
+    dispatch(removeFromCart(productId));
   };
 
   const shipping = 0; // Free shipping
