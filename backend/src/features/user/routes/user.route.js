@@ -43,6 +43,6 @@ router.get('/category', verifyJwt, getProductsByCategory);
 router.put('/wishlist', verifyJwt, addToWishlist);
 router.get('/cart', verifyJwt, getUserCart);
 router.put('/cart', verifyJwt, addToCart);
-router.delete('/cart', verifyJwt, removeFromCart);
+router.delete('/cart/:productId', verifyJwt, removeFromCart);
 
 export default router;
