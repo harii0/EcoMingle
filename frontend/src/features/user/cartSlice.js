@@ -30,12 +30,15 @@ export const addToCart = createAsyncThunk(
   },
 );
 export const removeFromCart = createAsyncThunk(
-  'cart/removeCart',
+  'cart/removeFromCart',
   async (data, { rejectWithValue }) => {
     try {
+      console.log(data);
+
       const response = await removeCart(data);
       return response.data;
     } catch (error) {
+      console.log(error.response.data);
       return rejectWithValue(error.response.data);
     }
   },
@@ -87,6 +90,11 @@ const cartSlice = createSlice({
       state.status = 'failed';
       state.error = true;
       state.loading = false;
+    });
+    builder.addCase(removeFromCart.fulfilled, (state, action) => {
+      state.items = action.payload.data.updatedUser.cart;
+
+      localStorage.setItem('cartItems', JSON.stringify(state.items));
     });
   },
 });
