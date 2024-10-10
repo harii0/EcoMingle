@@ -33,7 +33,7 @@ export default function PrimarySearchAppBar() {
   const [cartCount, setCartCount] = useState(items.length);
 
   useEffect(() => {
-    setCartCount(items.length);
+    setCartCount(items?.length);
   }, [items]);
 
   const handleSubmit = (e) => {
