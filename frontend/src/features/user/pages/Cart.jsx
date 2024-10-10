@@ -7,6 +7,7 @@ import {
   selectCartItems,
   selectCartTotal,
   getFromCart,
+  addToCart,
 } from '../cartSlice';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -56,7 +57,12 @@ const EmptyCart = () => {
   );
 };
 
-const CartItem = ({ item, handleRemoveItem, handleUpdateQuantity }) => {
+const CartItem = ({
+  item,
+  handleRemoveItem,
+  handleIncrementQuantity,
+  handleDecrementQuantity,
+}) => {
   const product = item;
 
   if (!product) return null;
@@ -94,10 +100,7 @@ const CartItem = ({ item, handleRemoveItem, handleUpdateQuantity }) => {
         <IconButton
           size="small"
           onClick={() =>
-            handleUpdateQuantity(
-              product.productItem.productItem,
-              item.quantity - 1,
-            )
+            handleDecrementQuantity(product.productItem, product.quantity)
           }
         >
           <RemoveIcon />
@@ -106,18 +109,13 @@ const CartItem = ({ item, handleRemoveItem, handleUpdateQuantity }) => {
         <IconButton
           size="small"
           onClick={() =>
-            handleUpdateQuantity(
-              product.productItem.productItem,
-              item.quantity + 1,
-            )
+            handleIncrementQuantity(product.productItem, product.quantity)
           }
         >
           <AddIcon />
         </IconButton>
       </Box>
-      <IconButton
-        onClick={() => handleRemoveItem(product.productItem.productItem)}
-      >
+      <IconButton onClick={() => handleRemoveItem(product.productItem)}>
         <CloseIcon />
       </IconButton>
     </Box>
@@ -201,6 +199,26 @@ const Cart = () => {
     dispatch(removeFromCart(productId));
   };
 
+  const handleIncrementQuantity = (id, quantity) => {
+    const newQuantity = quantity + 1;
+    console.log('Incrementing:', id, 'New Quantity:', newQuantity);
+    if (quantity < 1) return;
+    const data = {
+      productId: id,
+      quantity: newQuantity,
+    };
+    dispatch(addToCart(data));
+  };
+  const handleDecrementQuantity = (id, quantity) => {
+    const newQuantity = quantity - 1;
+    if (quantity < 1) return;
+    const data = {
+      productId: id,
+      quantity: newQuantity,
+    };
+    dispatch(addToCart(data));
+  };
+
   const shipping = 0; // Free shipping
   const tax = cartTotal * 0.1; // Assume 10% tax
   const total = cartTotal + shipping + tax;
@@ -215,8 +233,12 @@ const Cart = () => {
           <CartItem
             key={item.productItem}
             item={item}
-            handleRemoveItem={() =>
-              handleRemoveItem(item.productItem.productItem)
+            handleRemoveItem={() => handleRemoveItem(item.productItem)}
+            handleIncrementQuantity={() =>
+              handleIncrementQuantity(item.productItem, item.quantity)
+            }
+            handleDecrementQuantity={() =>
+              handleDecrementQuantity(item.productItem, item.quantity)
             }
           />
         ))}
