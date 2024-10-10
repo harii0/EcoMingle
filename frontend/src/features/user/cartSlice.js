@@ -56,12 +56,14 @@ const cartSlice = createSlice({
     builder.addCase(getFromCart.fulfilled, (state, action) => {
       state.items = action.payload.data.cart?.items?.map((item) => ({
         ...item,
-        productItem: item.productItem
-          ? {
-              ...item,
-              productImage: item.ProductImage || item.productImage || [],
-            }
-          : null,
+        productItem:
+          item.productItem && typeof item.productItem === 'string'
+            ? item.productItem // If it's a string, assign it directly
+            : {
+                ...item.productItem, // Handle object case if needed
+                productImage:
+                  item.productItem.productImage || item.productImage || [],
+              },
       }));
       localStorage.setItem('cartItems', JSON.stringify(state.items));
     });
@@ -73,15 +75,14 @@ const cartSlice = createSlice({
       state.status = 'success';
       state.items = action.payload.data.cart.items.map((item) => ({
         ...item,
-        productItem: item.productItem
-          ? {
-              ...item.productItem,
-              productImage:
-                item.productItem.ProductImage ||
-                item.productItem.productImage ||
-                [],
-            }
-          : null,
+        productItem:
+          item.productItem && typeof item.productItem === 'string'
+            ? item.productItem // If it's a string, assign it directly
+            : {
+                ...item.productItem, // Handle object case if needed
+                productImage:
+                  item.productItem.productImage || item.productImage || [],
+              },
       }));
       state.loading = false;
       state.error = false;
@@ -104,9 +105,10 @@ export const { clearCart } = cartSlice.actions;
 export default cartSlice;
 
 export const selectCartItems = (state) => state.cart?.items;
+
 export const selectCartTotal = (state) =>
   state.cart.items?.reduce(
     (total, item) =>
-      total + (item.productItem ? item.productItem.price * item.quantity : 0),
+      total + (item.productItem ? item.price * item.quantity : 0),
     0,
   );
