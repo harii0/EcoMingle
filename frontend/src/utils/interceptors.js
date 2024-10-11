@@ -49,12 +49,12 @@ api.interceptors.response.use(
       try {
         const { data } = await api.post('/user/refresh_token');
         const { token } = data;
-        api.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-        processQueue(null, token);
+        // api.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+        processQueue(null, null);
         return api(originalConfig);
       } catch (_error) {
         processQueue(_error, null);
-        api.defaults.headers.common['Authorization'] = null;
+        // api.defaults.headers.common['Authorization'] = null;
         console.log(_error);
         store.dispatch(logoutUser());
         return Promise.reject(_error);
