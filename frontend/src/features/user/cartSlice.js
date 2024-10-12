@@ -29,6 +29,19 @@ export const addToCart = createAsyncThunk(
     }
   },
 );
+export const updateQuantity = createAsyncThunk(
+  'cart/updateQuantity',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await addcart(data);
+      console.log(response);
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
 export const removeFromCart = createAsyncThunk(
   'cart/removeFromCart',
   async (data, { rejectWithValue }) => {
@@ -86,6 +99,7 @@ const cartSlice = createSlice({
       }));
       state.loading = false;
       state.error = false;
+      localStorage.setItem('cartItems', JSON.stringify(state.items));
     });
     builder.addCase(addToCart.rejected, (state) => {
       state.status = 'failed';
@@ -97,6 +111,33 @@ const cartSlice = createSlice({
 
       localStorage.setItem('cartItems', JSON.stringify(state.items));
     });
+    builder
+      .addCase(updateQuantity.pending, (state) => {
+        state.status = 'pending';
+        state.loading = true;
+      })
+      .addCase(updateQuantity.fulfilled, (state, action) => {
+        state.status = 'success';
+        state.items = action.payload.data.cart.items.map((item) => ({
+          ...item,
+          productItem:
+            item.productItem && typeof item.productItem === 'string'
+              ? item.productItem // If it's a string, assign it directly
+              : {
+                  ...item.productItem, // Handle object case if needed
+                  productImage:
+                    item.productItem.productImage || item.productImage || [],
+                },
+        }));
+        state.loading = false;
+        state.error = false;
+        localStorage.setItem('cartItems', JSON.stringify(state.items));
+      })
+      .addCase(updateQuantity.rejected, (state) => {
+        state.status = 'failed';
+        state.error = true;
+        state.loading = false;
+      });
   },
 });
 
