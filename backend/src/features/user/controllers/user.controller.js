@@ -3,6 +3,7 @@ import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import uploadFile from '../../../utils/cloudinary.js';
 import User from '../models/user.model.js';
+import Product from '../../product/models/product.model.js';
 import Cart from '../models/cart.model.js';
 import asyncHandler from '../../../utils/asyncHandler.js';
 import { ApiError } from '../../../utils/ApiError.js';
@@ -286,7 +287,11 @@ const getUserWhislist = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(401, 'cant fetch user');
   }
-  const wishlist = user.wishlist;
+  console.log(user.wishlist);
+
+  const wishlist = await Product.find({ _id: { $in: user.wishlist } });
+  console.log(wishlist);
+
   return res.status(200).json(new ApiResponse(200, { wishlist }, 'wishlist'));
 });
 //rate product
