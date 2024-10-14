@@ -1,7 +1,7 @@
 // src/components/Wishlist.jsx
-
 import { useEffect, useState } from 'react';
-import { getWishlist } from '../api/wishlistApi'; // Ensure you have a removeFromWishlist function
+import { getWishlist, addToWishlist } from '../api/wishlistApi'; // Ensure you have a removeFromWishlist function
+
 import {
   Grid,
   Card,
@@ -11,8 +11,9 @@ import {
   Button,
   CircularProgress,
   Alert,
+  IconButton,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { IoCloseOutline } from 'react-icons/io5';
 
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]); // Stores the wishlist products
@@ -57,17 +58,37 @@ const Wishlist = () => {
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <Typography variant="h4" gutterBottom>
-        Your Wishlist
-      </Typography>
+    <div style={{ padding: '1rem' }}>
+      <Grid sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <Typography variant="h6">My Wishlist</Typography>
+        {wishlist.length > 1 ? (
+          <p>{wishlist.length} items</p>
+        ) : (
+          <p>{wishlist.length} item</p>
+        )}
+      </Grid>
       {wishlist.length === 0 ? (
         <Typography variant="h6">Your wishlist is empty.</Typography>
       ) : (
         <Grid container spacing={4}>
           {wishlist.map((product) => (
-            <Grid item key={product._id} xs={12} sm={6} md={4}>
-              <Card>
+            <Grid item key={product._id} xs={12} sm={6} md={3}>
+              <Card sx={{ position: 'relative' }}>
+                <IconButton
+                  onClick={() => addToWishlist(product._id)}
+                  sx={{
+                    position: 'absolute',
+                    right: '0',
+                    top: '0',
+                    background: '#fff',
+                  }}
+                  disableFocusRipple
+                  disableRipple
+                  aria-label="delete"
+                >
+                  <IoCloseOutline />
+                </IconButton>
+
                 <CardMedia
                   component="img"
                   height="200"
@@ -75,13 +96,8 @@ const Wishlist = () => {
                   alt={product.productName}
                 />
                 <CardContent>
-                  <Typography variant="h5" component="div">
+                  <Typography variant="h6" component="div" sx={{ mt: '1rem' }}>
                     {product.productName}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {product.description.length > 100
-                      ? `${product.description.substring(0, 100)}...`
-                      : product.description}
                   </Typography>
                   <Typography
                     variant="h6"
@@ -91,14 +107,6 @@ const Wishlist = () => {
                     ${product.price}
                   </Typography>
                 </CardContent>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  startIcon={<DeleteIcon />}
-                  style={{ margin: '0.5rem' }}
-                >
-                  Remove
-                </Button>
               </Card>
             </Grid>
           ))}
