@@ -7,9 +7,13 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "prettier": "^2.3.2",
-    "husky": "^8.0.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0"
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.0",
+    "prettier": "^2.3.2"
+  },
+  "dependencies": {
+    "@stripe/react-stripe-js": "^2.8.1",
+    "@stripe/stripe-js": "^4.8.0"
   }
 }
