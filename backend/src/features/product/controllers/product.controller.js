@@ -229,63 +229,68 @@ const addToWishlist = asyncHandler(async (req, res) => {
 
 //cart
 const addToCart = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
+  try {
+    const userId = req.user.id;
 
-  const { productId } = req.body;
-  const quantity = Number.parseInt(req.body.quantity);
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
-    throw new ApiError(400, 'Invalid product ID');
-  }
-  const product = await Product.findById(productId);
+    const { productId } = req.body;
+    const quantity = Number.parseInt(req.body.quantity);
 
-  if (!product) {
-    throw new ApiError(404, 'Product not found');
-  }
-  const productImage = product.ProductImage[0];
-  if (!productImage) {
-    throw new ApiError(400, 'Product image is missing');
-  }
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      throw new ApiError(400, 'Invalid product ID');
+    }
+    const product = await Product.findById(productId);
 
-  let cart = await Cart.findOne({ user: userId });
+    if (!product) {
+      throw new ApiError(404, 'Product not found');
+    }
+    const productImage = product.ProductImage[0];
+    if (!productImage) {
+      throw new ApiError(400, 'Product image is missing');
+    }
 
-  let vendor = await Vendor.findById(product.vendor);
+    let cart = await Cart.findOne({ user: userId });
 
-  if (!cart) {
-    cart = new Cart({
-      user: userId,
-      items: [
-        {
+    let vendor = await Vendor.findById(product.vendor);
+
+    if (!cart) {
+      cart = new Cart({
+        user: userId,
+        items: [
+          {
+            productItem: productId,
+            productName: product.productName,
+            productImage: productImage,
+            quantity,
+            price: product.price,
+            seller: vendor?.username,
+          },
+        ],
+      });
+    } else {
+      const itemIndex = cart.items.findIndex(
+        (item) => item.productItem.toString() === productId,
+      );
+
+      if (itemIndex > -1) {
+        cart.items[itemIndex].quantity = quantity;
+      } else {
+        cart.items.push({
           productItem: productId,
           productName: product.productName,
           productImage: productImage,
-          quantity,
           price: product.price,
+          quantity,
           seller: vendor?.username,
-        },
-      ],
-    });
-  } else {
-    const itemIndex = cart.items.findIndex(
-      (item) => item.productItem.toString() === productId,
-    );
-
-    if (itemIndex > -1) {
-      cart.items[itemIndex].quantity += quantity;
-    } else {
-      cart.items.push({
-        productItem: productId,
-        productName: product.productName,
-        productImage: productImage,
-        price: product.price,
-        quantity,
-        seller: vendor?.username,
-      });
+        });
+      }
     }
+
+    await cart.save();
+
+    return res.json(new ApiResponse(200, { cart }, 'Product added to cart'));
+  } catch (error) {
+    throw new ApiError(400, 'Cart error');
   }
-
-  await cart.save();
-
-  return res.json(new ApiResponse(200, { cart }, 'Product added to cart'));
 });
 
 const removeFromCart = asyncHandler(async (req, res) => {
