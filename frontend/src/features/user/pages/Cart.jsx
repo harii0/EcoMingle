@@ -8,6 +8,7 @@ import {
   selectCartTotal,
   getFromCart,
   updateQuantity,
+  setCheckoutItems,
 } from '../cartSlice';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -119,8 +120,7 @@ const CartItem = ({
   );
 };
 
-const OrderSummary = ({ subtotal, shipping, tax, total }) => {
-  const navigate = useNavigate();
+const OrderSummary = ({ subtotal, shipping, tax, total, onCheckout }) => {
   return (
     <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1 }}>
       <Typography variant="h6" gutterBottom>
@@ -161,7 +161,7 @@ const OrderSummary = ({ subtotal, shipping, tax, total }) => {
           bgcolor: 'primary.main',
           '&:hover': { bgcolor: '#45a049' },
         }}
-        onClick={() => navigate('/cart/checkout')}
+        onClick={onCheckout}
       >
         Checkout
       </Button>
@@ -184,6 +184,7 @@ const OrderSummary = ({ subtotal, shipping, tax, total }) => {
 };
 
 const Cart = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
 
@@ -208,6 +209,10 @@ const Cart = () => {
     if (item && item.quantity > 1) {
       dispatch(updateQuantity({ productId, quantity: item.quantity - 1 }));
     }
+  };
+  const handleCheckout = () => {
+    dispatch(setCheckoutItems(cartItems));
+    navigate('/cart/checkout');
   };
 
   const shipping = 0; // Free shipping
@@ -236,6 +241,7 @@ const Cart = () => {
           shipping={shipping}
           tax={tax}
           total={total}
+          onCheckout={handleCheckout}
         />
       </Grid>
     </Grid>
