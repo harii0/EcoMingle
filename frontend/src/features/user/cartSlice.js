@@ -5,6 +5,7 @@ const initialState = {
   status: '',
   loading: false,
   error: false,
+  checkoutItems: [],
 };
 
 export const getFromCart = createAsyncThunk(
@@ -63,6 +64,10 @@ const cartSlice = createSlice({
   reducers: {
     clearCart: (state) => {
       state.items = [];
+    },
+    setCheckoutItems: (state, action) => {
+      console.log(action.payload);
+      state.checkoutItems = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -142,11 +147,12 @@ const cartSlice = createSlice({
 });
 
 export const { clearCart } = cartSlice.actions;
+export const { setCheckoutItems } = cartSlice.actions;
 
 export default cartSlice;
 
 export const selectCartItems = (state) => state.cart?.items;
-
+export const selectCheckoutItems = (state) => state.cart?.checkoutItems;
 export const selectCartTotal = (state) =>
   state.cart.items?.reduce(
     (total, item) =>
