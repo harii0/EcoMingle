@@ -19,28 +19,9 @@ import {
   LuLogOut,
   LuKey,
 } from 'react-icons/lu';
-import { getProfile } from '../api/profileApi.js';
+import { getOrders, getProfile } from '../api/profileApi.js';
 import EmissionCard from '../../../components/EmissionCard';
 import { getWishlist } from '../api/wishlistApi.js';
-// Orders data sample
-const orders = [
-  {
-    id: 1,
-    name: 'Raw Black T-Shirt Lineup',
-    date: '27 July 2023',
-    price: '$70.00',
-    status: 'Processing',
-    image: 'https://via.placeholder.com/50', // Image URL or local image
-  },
-  {
-    id: 2,
-    name: 'Monochromatic Wardrobe',
-    date: '9 March 2023',
-    price: '$27.00',
-    status: 'Completed',
-    image: 'https://via.placeholder.com/50',
-  },
-];
 
 // Custom TabPanel component
 const TabPanel = ({ children, value, index }) => {
@@ -53,6 +34,7 @@ const TabPanel = ({ children, value, index }) => {
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
+  const [orders, setOrders] = useState(null);
   const [wishlist, setWhishlist] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -72,6 +54,20 @@ const Profile = () => {
 
     fetchProfile();
   }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const response = await getOrders();
+      console.log(response.data);
+
+      setOrders(response.data);
+
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+    }
+  };
 
   const [value, setValue] = useState(0);
 
@@ -131,6 +127,7 @@ const Profile = () => {
                 }}
               />
               <Tab
+                onClick={fetchOrders}
                 disableRipple
                 label="Orders"
                 icon={<LuShoppingCart size={22} />}
@@ -187,9 +184,9 @@ const Profile = () => {
             </Typography>
 
             {/* Orders List */}
-            {orders.map((order) => (
+            {orders?.map((order) => (
               <Paper
-                key={order.id}
+                key={order._id}
                 elevation={1}
                 sx={{
                   display: 'flex',
@@ -201,18 +198,22 @@ const Profile = () => {
               >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <img
-                    src={order.image}
-                    alt={order.name}
+                    src={order.product?.ProductImage[0]} // Get the first image from ProductImage array
+                    alt={order.product?.productName} // Use productName as alt text
                     style={{ width: 50, height: 50, marginRight: 16 }}
                   />
                   <Box>
                     <Typography variant="body1" fontWeight="bold">
-                      {order.name}
+                      {order.product?.productName}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Ordered On: {order.date}
+                      Ordered On:{' '}
+                      {new Date(order?.dateOrdered).toLocaleDateString()}
                     </Typography>
-                    <Typography variant="body2">{order.price}</Typography>
+                    <Typography variant="body2">
+                      Total Price: ${order?.totalPrice.toFixed(2)}
+                    </Typography>{' '}
+                    {/* Display totalPrice */}
                   </Box>
                 </Box>
 
@@ -220,12 +221,12 @@ const Profile = () => {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: order.status === 'Completed' ? 'green' : 'orange',
+                      color: order.status === 'delivered' ? 'green' : 'orange', // Check for delivered status
                       fontWeight: 'bold',
                       mr: 2,
                     }}
                   >
-                    {order.status}
+                    {order.status} {/* Display the order status */}
                   </Typography>
                   <Button variant="outlined" size="small">
                     View item
