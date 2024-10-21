@@ -11,7 +11,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const getUserOrders = async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
-    const orders = await Order.find({ user: userId });
+    const orders = await Order.find({ user: userId })
+      .populate('product', 'productName ProductImage')
+      .lean();
+
     res.status(200).json(orders);
   } catch (error) {
     console.log(error);
@@ -73,6 +76,12 @@ export const processPayment = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { paymentMethod, currency } = req.body;
+    console.log(
+      '#####################################',
+      paymentMethod,
+      currency,
+    );
+
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
@@ -80,11 +89,20 @@ export const processPayment = async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: order.totalPrice * 100,
       currency: currency || 'usd',
-      payment_method: [paymentMethod],
+      payment_method: paymentMethod,
       metadata: { orderId: order._id.toString() },
+      confirm: true,
+      payment_method_types: ['card'],
+      automatic_payment_methods: {
+        allow_redirects: 'never',
+        enabled: true,
+      },
     });
 
-    res.status(200).json(paymentIntent.client_secret);
+    res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Server error', error });
