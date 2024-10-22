@@ -20,7 +20,7 @@ router.get('/my_orders', verifyJwt, getUserOrders);
 router.post('/', verifyJwt, createOrder);
 router.delete('/:orderId', cancelOrder);
 router.get('/:orderId', getOrderById);
-router.post('/:orderId/process-payment', processPayment);
+router.post('/process-payment', processPayment);
 router.post('/confirm-payment', verifyJwt, confirmPayment);
 
 export default router;
