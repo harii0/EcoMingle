@@ -39,6 +39,8 @@ export const createOrder = asyncHandler(async (req, res) => {
   try {
     const { pId, quantity, shippingAddress1, city, zip, country, phone } =
       req.body;
+    console.log(req.body);
+
     const userId = req.user.id;
 
     const product = await Product.findById(pId);
@@ -74,10 +76,10 @@ export const createOrder = asyncHandler(async (req, res) => {
 // Process payment for an order
 export const processPayment = async (req, res) => {
   try {
-    const { orderId } = req.params;
-    const { paymentMethod, currency } = req.body;
+    const { paymentMethod, currency, orderId } = req.body;
     console.log(
       '#####################################',
+      orderId,
       paymentMethod,
       currency,
     );
@@ -87,15 +89,13 @@ export const processPayment = async (req, res) => {
 
     //  a payment intent with Stripe
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: order.totalPrice * 100,
+      amount: order.totalPrice,
       currency: currency || 'usd',
       payment_method: paymentMethod,
       metadata: { orderId: order._id.toString() },
-      confirm: true,
       payment_method_types: ['card'],
       automatic_payment_methods: {
-        allow_redirects: 'never',
-        enabled: true,
+        enabled: false,
       },
     });
 
@@ -133,7 +133,7 @@ export const confirmPayment = asyncHandler(async (req, res) => {
         .json({ message: 'Payment not successful. Please try again.' });
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     res.status(500).json({ message: 'Server error', error });
   }
