@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
+  Avatar,
   Box,
   Button,
   Container,
@@ -9,6 +10,7 @@ import {
   Tabs,
   TextField,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 
 import {
@@ -22,6 +24,7 @@ import {
 import { getOrders, getProfile } from '../api/profileApi.js';
 import EmissionCard from '../../../components/EmissionCard';
 import { getWishlist } from '../api/wishlistApi.js';
+import { useTheme } from '@mui/styles';
 
 // Custom TabPanel component
 const TabPanel = ({ children, value, index }) => {
@@ -33,6 +36,7 @@ const TabPanel = ({ children, value, index }) => {
 };
 
 const Profile = () => {
+  const theme = useTheme();
   const [profile, setProfile] = useState(null);
   const [orders, setOrders] = useState(null);
   const [wishlist, setWhishlist] = useState(null);
@@ -84,6 +88,7 @@ const Profile = () => {
     }
   };
 
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   return (
     <Container maxWidth="lg" sx={{ mt: 2, mb: 2 }}>
       <Grid container spacing={3}>
@@ -97,31 +102,32 @@ const Profile = () => {
             }}
           >
             <Tabs
-              orientation="vertical"
+              orientation={isSmallScreen ? 'horizontal' : 'vertical'}
               variant="standard"
               indicatorColor="transparent"
               value={value}
               onChange={handleTabChange}
               aria-label="profile sidebar"
               sx={{
-                borderRight: 1,
+                borderRight: isSmallScreen ? 0 : 1, // No border for horizontal view
+                borderBottom: isSmallScreen ? 1 : 0, // Add border to bottom when horizontal
                 borderColor: 'divider',
-                minHeight: '100%',
+                minHeight: isSmallScreen ? 'auto' : '100%', // Adjust height
                 padding: '12px',
                 color: 'text.secondary',
                 '& .Mui-selected': {
                   backgroundColor: '#F6F6F6',
-                  color: 'priamry',
+                  color: 'primary',
                 },
               }}
             >
               <Tab
                 disableRipple
-                label="Account"
+                label={isSmallScreen ? '' : 'Account'}
                 icon={<LuUserCircle size={22} />}
                 iconPosition="start"
                 sx={{
-                  justifyContent: 'start',
+                  justifyContent: isSmallScreen ? 'center' : 'start', // Adjust alignment
                   fontWeight: 'medium',
                   gap: '5px',
                 }}
@@ -129,11 +135,11 @@ const Profile = () => {
               <Tab
                 onClick={fetchOrders}
                 disableRipple
-                label="Orders"
+                label={isSmallScreen ? '' : 'Orders'}
                 icon={<LuShoppingCart size={22} />}
                 iconPosition="start"
                 sx={{
-                  justifyContent: 'start',
+                  justifyContent: isSmallScreen ? 'center' : 'start',
                   fontWeight: 'medium',
                   gap: '5px',
                 }}
@@ -141,33 +147,33 @@ const Profile = () => {
               <Tab
                 onClick={whishlistHandler}
                 disableRipple
-                label="Wishlist"
+                label={isSmallScreen ? '' : 'Whishlist'}
                 icon={<LuHeart size={22} />}
                 iconPosition="start"
                 sx={{
-                  justifyContent: 'start',
+                  justifyContent: isSmallScreen ? 'center' : 'start',
                   fontWeight: 'medium',
                   gap: '5px',
                 }}
               />
               <Tab
                 disableRipple
-                label="Address"
+                label={isSmallScreen ? '' : 'Address'}
                 icon={<LuMapPin size={22} />}
                 iconPosition="start"
                 sx={{
-                  justifyContent: 'start',
+                  justifyContent: isSmallScreen ? 'center' : 'start',
                   fontWeight: 'medium',
                   gap: '5px',
                 }}
               />
               <Tab
                 disableRipple
-                label="Password"
+                label={isSmallScreen ? '' : 'Password'}
                 icon={<LuKey size={22} />}
                 iconPosition="start"
                 sx={{
-                  justifyContent: 'start',
+                  justifyContent: isSmallScreen ? 'center' : 'start',
                   fontWeight: 'medium',
                   gap: '5px',
                 }}
@@ -268,22 +274,39 @@ const Profile = () => {
                       boxShadow: 'none',
                       display: 'flex',
                       flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                       gap: 1,
                       border: '1px solid #E5E5E5',
                     }}
                   >
-                    <Typography variant="h6" gutterBottom>
-                      Profile
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Username: {profile.username}
-                    </Typography>
+                    <Avatar
+                      alt={profile.username}
+                      src={avatar}
+                      sx={{ width: 90, height: 90 }}
+                    />
+                    <Typography variant="h6">{profile.username}</Typography>
                     <Typography variant="body2" color="textSecondary">
                       Email: {profile.email}
                     </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Phone Number: {profile.phone}
-                    </Typography>
+                    {profile.phone ? (
+                      <Typography variant="body2" color="textSecondary">
+                        Phone Number: {profile.phone}
+                      </Typography>
+                    ) : (
+                      <Typography variant="body2" color="textSecondary">
+                        Phone Number: nill
+                      </Typography>
+                    )}
+
+                    <Button
+                      disableElevation
+                      disableRipple
+                      size="small"
+                      variant="contained"
+                    >
+                      Edit profile
+                    </Button>
                   </Paper>
                 </Grid>
                 <Grid item xs={12} md={6}>
