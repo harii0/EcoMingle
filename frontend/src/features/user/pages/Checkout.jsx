@@ -9,7 +9,9 @@ import {
   StepLabel,
   Button,
   Typography,
+  Box,
 } from '@mui/material';
+import { CheckCircleOutline } from '@mui/icons-material';
 import AddressForm from '../components/AddressForm';
 import PaymentForm from '../components/PaymentForm';
 import Review from '../components/Review';
@@ -30,6 +32,7 @@ export default function Checkout() {
   const [activeStep, setActiveStep] = useState(0);
   const [shippingData, setShippingData] = useState(null);
   const [paymentData, setPaymentData] = useState(null);
+  const [confirmed, setConfirmed] = useState(null);
 
   const handleNext = () => setActiveStep(activeStep + 1);
   const handleBack = () => setActiveStep(activeStep - 1);
@@ -75,7 +78,10 @@ export default function Checkout() {
         paymentMethod: 'pm_card_visa',
       };
       const confirmPayment = await confirmOrder(confirmData);
-      console.log(confirmPayment);
+      if (confirmPayment.status === 200) {
+        setConfirmed(confirmPayment);
+        handleNext();
+      }
 
       //confirmPayment
     } catch (error) {
@@ -119,11 +125,48 @@ export default function Checkout() {
               {/* Conditional Rendering based on Active Step */}
               {activeStep === steps.length ? (
                 <>
-                  <Typography variant="h5" gutterBottom>
-                    Thank you for your order.
-                  </Typography>
-                  {/* Order confirmation details */}
-                  {/* You can also include order number and confirmation here */}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      minHeight: '90vh',
+                      backgroundColor: '#f5f5f5',
+                    }}
+                  >
+                    <Paper
+                      elevation={3}
+                      sx={{ padding: 4, textAlign: 'center', maxWidth: 400 }}
+                    >
+                      <CheckCircleOutline
+                        sx={{ fontSize: 80, color: 'green' }}
+                      />
+                      <Typography variant="h4" sx={{ marginTop: 2 }}>
+                        Order Placed Successfully!
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ marginTop: 1, color: 'gray' }}
+                      >
+                        Thank you for your purchase. Your order is being
+                        processed.
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ marginTop: 1, color: 'gray' }}
+                      >
+                        Order ID: #123456789
+                      </Typography>
+
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ marginTop: 3 }}
+                      >
+                        Continue Shopping
+                      </Button>
+                    </Paper>
+                  </Box>
                 </>
               ) : (
                 <>
