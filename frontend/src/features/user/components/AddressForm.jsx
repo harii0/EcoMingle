@@ -14,10 +14,22 @@ import {
   DialogTitle,
 } from '@mui/material';
 
-// eslint-disable-next-line react/prop-types
 const AddressForm = ({ onSubmit }) => {
   const [open, setOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [addressList, setAddressList] = useState([
+    {
+      type: 'home',
+
+      name: 'Hari',
+      phone: '222222',
+
+      zip: '4444',
+      shippingAddress1: 'dddddddddd',
+      city: 'Sample City',
+      country: 'Sample Country',
+    },
+  ]);
   const [newAddress, setNewAddress] = useState({
     name: '',
     phone: '',
@@ -26,35 +38,22 @@ const AddressForm = ({ onSubmit }) => {
     city: '',
     country: '',
   });
+
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const handleSave = () => {};
-  const address = [
-    {
-      type: 'home',
-      contact: {
-        name: 'Hari',
-        phone: '222222',
-      },
-      address: {
-        zip: '4444',
-        shippingAddress1: 'dddddddddd',
-        city: 'Sample City',
-        country: 'Sample Country',
-      },
-    },
-  ];
+  const handleClose = () => {
+    setOpen(false);
+    setNewAddress({
+      name: '',
+      phone: '',
+      zip: '',
+      shippingAddress1: '',
+      city: '',
+      country: '',
+    });
+  };
 
   const handleAddressSelection = (address) => {
     setSelectedAddress(address);
-    setNewAddress({
-      name: address.contact.name,
-      phone: address.contact.phone,
-      zip: address.address.zip,
-      shippingAddress1: address.address.shippingAddress1,
-      city: address.address.city,
-      country: address.address.country,
-    });
   };
 
   const handleNewAddressChange = (event) => {
@@ -64,8 +63,24 @@ const AddressForm = ({ onSubmit }) => {
     });
   };
 
+  const handleSave = () => {
+    const newAddressData = {
+      type: 'home',
+      name: newAddress.name,
+      phone: newAddress.phone,
+      zip: newAddress.zip,
+      shippingAddress1: newAddress.shippingAddress1,
+      city: newAddress.city,
+      country: newAddress.country,
+    };
+
+    setAddressList([...addressList, newAddressData]);
+    handleClose();
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (selectedAddress === null) return;
     onSubmit(selectedAddress || newAddress);
   };
 
@@ -75,42 +90,48 @@ const AddressForm = ({ onSubmit }) => {
         Shipping Address
       </Typography>
       <form onSubmit={handleSubmit}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            {address.map((data, index) => (
+        <Grid
+          container
+          spacing={2}
+          sx={{ display: 'flex', flexDirection: 'column' }}
+        >
+          <Grid item xs={12} md={10} sx={{ display: 'flex', gap: '20px' }}>
+            {addressList.map((data, index) => (
               <Card
                 key={index}
                 sx={{
                   display: 'flex',
+                  width: '100%',
                   flexDirection: 'column',
                   gap: 1,
                   boxShadow: 'none',
                   border: 'solid 1px',
                   marginBottom: 2,
                   cursor: 'pointer',
-                  backgroundColor: selectedAddress === data ? '#fff' : 'white',
+                  backgroundColor:
+                    selectedAddress === data ? '#f0f0f0' : 'white',
                 }}
+                onClick={() => handleAddressSelection(data)}
               >
                 <Box
                   sx={{
-                    display: 'flex ',
-                    width: 'full',
+                    display: 'flex',
                     justifyContent: 'space-between',
                   }}
                 >
                   <Chip variant="outlined" label={data.type} />
-                  <Radio onChange={() => handleAddressSelection(data)} />
+                  <Radio
+                    checked={selectedAddress === data}
+                    onChange={() => handleAddressSelection(data)}
+                  />
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Typography variant="body1">{data.contact.name}</Typography>
+                  <Typography variant="body1">{data.name}</Typography>
                 </Box>
                 <Typography variant="body2">
-                  {data.address.shippingAddress1}, {data.address.city} -{' '}
-                  {data.address.zip}
+                  {data.shippingAddress1}, {data.city} - {data.zip}
                 </Typography>
-                <Typography variant="body2">
-                  Mobile: {data.contact.phone}
-                </Typography>
+                <Typography variant="body2">Mobile: {data.phone}</Typography>
               </Card>
             ))}
           </Grid>
@@ -193,13 +214,12 @@ const AddressForm = ({ onSubmit }) => {
                   margin="normal"
                 />
               </DialogContent>
-
               <DialogActions>
                 <Button onClick={handleClose}>Cancel</Button>
                 <Button
                   variant="contained"
-                  onClick={handleSave}
                   color="primary"
+                  onClick={handleSave}
                 >
                   Save
                 </Button>
@@ -211,6 +231,7 @@ const AddressForm = ({ onSubmit }) => {
           <Button
             type="submit"
             variant="contained"
+            disabled={selectedAddress === null}
             color="primary"
             sx={{ mt: 3, ml: 1 }}
           >
