@@ -13,6 +13,8 @@ import ProductPage from '../features/user/pages/Product';
 import Cart from '../features/user/pages/Cart';
 import Checkout from '../features/user/pages/Checkout';
 import Wishlist from '../features/user/pages/Wishlist';
+import AdminDashboard from '../features/admin/pages/AdminDashboard';
+import Users from '../features/admin/pages/Users';
 
 const AppRoutes = () => {
   return (
@@ -22,13 +24,37 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgetpassword" element={<ForgetPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/" element={<Dashboard />} />
-      <Route path="/profile" element={<ProtectedRoute element={Profile} />} />
-      <Route path="/wishlist" element={<ProtectedRoute element={Wishlist} />} />
-      <Route path="/cart/checkout" element={<Checkout />} />
+
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute requiredRoles={['user', 'admin']} element={Profile} />
+        }
+      />
+      <Route
+        path="/wishlist"
+        element={<ProtectedRoute requiredRoles={['user']} element={Wishlist} />}
+      />
+      <Route
+        path="/cart/checkout"
+        element={<ProtectedRoute requiredRoles={['user']} element={Checkout} />}
+      />
       <Route path="/product/:id" element={<ProductPage />} />
       <Route path="/catalog" element={<Catalog />} />
       <Route path="/cart" element={<Cart />} />
+
+      {/* Admin Routes */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute requiredRoles={['admin']} element={AdminDashboard} />
+        }
+      />
+      <Route
+        path="/users"
+        element={<ProtectedRoute requiredRoles={['admin']} element={Users} />}
+      />
     </Routes>
   );
 };
