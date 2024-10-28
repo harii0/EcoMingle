@@ -29,10 +29,15 @@ export const loginUser = createAsyncThunk(
   async (data, { rejectWithValue, dispatch }) => {
     try {
       const response = await login(data);
+
       TokenService.setUser(response?.data);
-      dispatch(getFromCart());
+      if (response.data.data.user.role != 'admin') {
+        dispatch(getFromCart());
+      }
       return response.data;
     } catch (error) {
+      console.log(error);
+
       return rejectWithValue(error.response.data);
     }
   },
