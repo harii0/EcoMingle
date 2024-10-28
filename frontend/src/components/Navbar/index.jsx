@@ -30,7 +30,7 @@ export default function PrimarySearchAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [search, setSearch] = useState('');
-  const [cartCount, setCartCount] = useState(items.length);
+  const [cartCount, setCartCount] = useState(items?.length);
 
   useEffect(() => {
     setCartCount(items?.length);
