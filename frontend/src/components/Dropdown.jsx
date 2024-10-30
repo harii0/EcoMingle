@@ -76,11 +76,11 @@ function EcoFriendlyNavbar() {
             onMouseLeave={handleMouseLeave}
           >
             <Button
-              endIcon={<ArrowDropDownIcon />}
               sx={{
-                color: '#000',
+                color: '#2c2c2c',
                 fontWeight: 'medium',
                 fontSize: '12px',
+
                 '&:hover': {
                   backgroundColor: 'rgba(0, 0, 0, 0.04)',
                 },
