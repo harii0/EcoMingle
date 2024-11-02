@@ -7,3 +7,7 @@ export const getProfile = async () => {
 export const getOrders = async () => {
   return await api.get('/order/my_orders');
 };
+
+export const updateProfile = async (data) => {
+  return await api.post('/user/update', data);
+};
