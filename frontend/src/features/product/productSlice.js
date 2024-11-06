@@ -5,6 +5,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  getProductsByCategory,
 } from './api';
 
 const initialState = {
@@ -28,6 +29,17 @@ export const getProductsThunk = createAsyncThunk(
   },
 );
 
+export const getProductByCategory = createAsyncThunk(
+  'product/getProductsByCategory',
+  async (category, { rejectWithValue }) => {
+    try {
+      const response = await getProductsByCategory(category);
+      return response.data.data.products;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
 export const getProductThunk = createAsyncThunk(
   'product/getProduct',
   async (id, { rejectWithValue }) => {
@@ -170,6 +182,13 @@ const productSlice = createSlice({
         state.error = true;
         state.loading = false;
         state.helperText = action.payload?.message || 'Something went wrong';
+      })
+      .addCase(getProductByCategory.fulfilled, (state, action) => {
+        state.status = 'success';
+        state.products = action.payload;
+        state.loading = false;
+        state.helperText = action.payload?.message;
+        state.error = false;
       });
   },
 });
