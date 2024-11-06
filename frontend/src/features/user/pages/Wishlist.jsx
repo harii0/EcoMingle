@@ -1,6 +1,7 @@
 // src/components/Wishlist.jsx
 import { useEffect, useState } from 'react';
 import { getWishlist, addToWishlist } from '../api/wishlistApi'; // Ensure you have a removeFromWishlist function
+import { FiInbox } from 'react-icons/fi';
 
 import {
   Grid,
@@ -12,6 +13,7 @@ import {
   CircularProgress,
   Alert,
   IconButton,
+  Box,
 } from '@mui/material';
 import { IoCloseOutline } from 'react-icons/io5';
 
@@ -67,8 +69,25 @@ const Wishlist = () => {
           <p>{wishlist.length} item</p>
         )}
       </Grid>
+
       {wishlist.length === 0 ? (
-        <Typography variant="h6">Your wishlist is empty.</Typography>
+        <Card
+          elevation={0}
+          sx={{ display: 'flex', justifyContent: 'center', boxShadow: 'none' }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <FiInbox size={100} strokeWidth={1} color="grey" />
+            <Typography>Your Wishlist is Empty!</Typography>
+          </Box>
+        </Card>
       ) : (
         <Grid container spacing={4}>
           {wishlist.map((product) => (
