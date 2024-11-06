@@ -3,6 +3,9 @@ import api from '../../utils/api';
 export const getProducts = () => {
   return api.get('/vendor/products');
 };
+export const getProductsByCategory = (category) => {
+  return api.get(`user/category/?category=${category}`);
+};
 
 export const getProduct = (id) => {
   return api.get(`/user/products/${id}`);
