@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { addcart, getCart, removeCart } from './api/cartApi';
+
 const initialState = {
   items: JSON.parse(localStorage.getItem('cartItems')) || [],
   status: '',
@@ -47,12 +48,10 @@ export const removeFromCart = createAsyncThunk(
   'cart/removeFromCart',
   async (data, { rejectWithValue }) => {
     try {
-      console.log(data);
-
       const response = await removeCart(data);
+      localStorage.removeItem('cartItems');
       return response.data;
     } catch (error) {
-      console.log(error.response.data);
       return rejectWithValue(error.response.data);
     }
   },
@@ -64,6 +63,7 @@ const cartSlice = createSlice({
   reducers: {
     clearCart: (state) => {
       state.items = [];
+      localStorage.removeItem('cartItems');
     },
     setCheckoutItems: (state, action) => {
       console.log(action.payload);
