@@ -7,13 +7,13 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { Link } from 'react-router-dom';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const getUsers = async () => {
     try {
       const response = await getAllUsers();
-      console.log(response);
       setUsers(response.data.data.users);
       return;
     } catch (error) {
@@ -42,7 +42,7 @@ const Users = () => {
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {user._id}
+                  <Link to={`${user._id}`}>{user._id}</Link>
                 </TableCell>
 
                 <TableCell>{user.username}</TableCell>
