@@ -16,17 +16,31 @@ import {
   LuHeart,
   LuShoppingBag,
 } from 'react-icons/lu';
+import { CiShop } from 'react-icons/ci';
+
 import { Search, StyledInputBase } from './navbar.style';
 import logo from '../../assets/images/logo.svg';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../features/auth/authSlice.js';
 import { useDispatch } from 'react-redux';
+import { Typography } from '@mui/material';
 export default function PrimarySearchAppBar() {
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const role = user?.data?.user?.role || user?.user.role || null;
+
+  const [notAllowed, setNotAllowed] = useState(false);
+  useEffect(() => {
+    if (role === 'admin') {
+      setNotAllowed(true);
+    } else {
+      setNotAllowed(false);
+    }
+  }, [role]);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [search, setSearch] = useState('');
@@ -185,45 +199,49 @@ export default function PrimarySearchAppBar() {
               alignItems: 'center',
             }}
           >
-            <Search sx={{ borderRadius: '50px' }}>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }}
-                onChange={(e) => setSearch(e.target.value.trim())}
-              />
-              <IconButton
-                disabled={search === ''}
-                disableRipple
-                size="small"
-                type="submit"
-                variant="contained"
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  minWidth: '35px',
-                  width: '35px',
-                  marginRight: '2px',
-                  my: '1px',
-                  minHeight: '35px',
-                  fontSize: '12px',
-                  fontWeight: 'medium',
-                  backgroundColor: 'primary.main',
-                  color: 'white',
-                  borderRadius: '50px',
+            {notAllowed ? (
+              <div></div>
+            ) : (
+              <Search sx={{ borderRadius: '50px' }}>
+                <StyledInputBase
+                  placeholder="Search…"
+                  inputProps={{ 'aria-label': 'search' }}
+                  onChange={(e) => setSearch(e.target.value.trim())}
+                />
+                <IconButton
+                  disabled={search === ''}
+                  disableRipple
+                  size="small"
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minWidth: '35px',
+                    width: '35px',
+                    marginRight: '2px',
+                    my: '1px',
+                    minHeight: '35px',
+                    fontSize: '12px',
+                    fontWeight: 'medium',
+                    backgroundColor: 'primary.main',
+                    color: 'white',
+                    borderRadius: '50px',
 
-                  ':hover': {
-                    backgroundColor: '#2E7D32',
-                  },
-                  '&.Mui-disabled': {
-                    backgroundColor: '#e0e0e0',
-                  },
-                }}
-                onClick={handleSubmit}
-              >
-                <LuSearch color="white" fontSize={18} strokeWidth={1.5} />
-              </IconButton>
-            </Search>
+                    ':hover': {
+                      backgroundColor: '#2E7D32',
+                    },
+                    '&.Mui-disabled': {
+                      backgroundColor: '#e0e0e0',
+                    },
+                  }}
+                  onClick={handleSubmit}
+                >
+                  <LuSearch color="white" fontSize={18} strokeWidth={1.5} />
+                </IconButton>
+              </Search>
+            )}
           </Box>
 
           <Box
@@ -245,22 +263,43 @@ export default function PrimarySearchAppBar() {
               }}
             >
               <>
-                <IconButton
-                  size="large"
-                  edge="end"
-                  aria-label="account of current user"
-                  aria-controls={menuId}
-                  aria-haspopup="true"
-                  onClick={
-                    isAuthenticated
-                      ? () => navigate('/wishlist')
-                      : () => navigate('/login')
-                  }
-                  color="inherit"
-                  disableRipple
-                >
-                  <LuHeart fontSize={22} strokeWidth={1.5} />
-                </IconButton>
+                {notAllowed ? (
+                  <div></div>
+                ) : (
+                  <IconButton
+                    size="small"
+                    edge="end"
+                    aria-label="account of current user"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={() => navigate('/vendor-register')}
+                    color="inherit"
+                    disableRipple
+                  >
+                    <CiShop />
+                    <Typography fontSize={12}> Become a seller</Typography>
+                  </IconButton>
+                )}
+                {notAllowed ? (
+                  <div></div>
+                ) : (
+                  <IconButton
+                    size="large"
+                    edge="end"
+                    aria-label="account of current user"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={
+                      isAuthenticated
+                        ? () => navigate('/wishlist')
+                        : () => navigate('/login')
+                    }
+                    color="inherit"
+                    disableRipple
+                  >
+                    <LuHeart fontSize={22} strokeWidth={1.5} />
+                  </IconButton>
+                )}
                 <IconButton
                   size="large"
                   edge="end"
@@ -273,17 +312,25 @@ export default function PrimarySearchAppBar() {
                 >
                   <LuUserCircle fontSize={22} strokeWidth={1.5} />
                 </IconButton>
-                <IconButton
-                  size="large"
-                  aria-label="show 4 new mails"
-                  color="inherit"
-                  disableRipple
-                  onClick={() => navigate('/cart')}
-                >
-                  <Badge size="small" badgeContent={cartCount} color="primary">
-                    <LuShoppingBag fontSize={22} strokeWidth={1.5} />
-                  </Badge>
-                </IconButton>
+                {notAllowed ? (
+                  <div></div>
+                ) : (
+                  <IconButton
+                    size="large"
+                    aria-label="show 4 new mails"
+                    color="inherit"
+                    disableRipple
+                    onClick={() => navigate('/cart')}
+                  >
+                    <Badge
+                      size="small"
+                      badgeContent={cartCount}
+                      color="primary"
+                    >
+                      <LuShoppingBag fontSize={22} strokeWidth={1.5} />
+                    </Badge>
+                  </IconButton>
+                )}
               </>
             </Box>
 
