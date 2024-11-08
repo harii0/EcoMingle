@@ -22,6 +22,9 @@ import {
   Inventory as InventoryIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCustomerCount, getProductsCount } from '../adminSlice';
 
 const mockOrders = [
   {
@@ -86,7 +89,16 @@ const StatCard = ({ title, value, icon: Icon, trend, onClick }) => (
 );
 
 const AdminDashboard = () => {
+  const { customerCount, productsCount } = useSelector((state) => state.admin);
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(getCustomerCount());
+    dispatch(getProductsCount());
+  }, [dispatch]);
+
   return (
     <Box
       sx={{
@@ -99,7 +111,7 @@ const AdminDashboard = () => {
       <CssBaseline />
 
       {/* Main Content */}
-      <Box component="main" sx={{ flexGrow: 1, pt: 10 }}>
+      <Box component="main" sx={{ flexGrow: 1, pt: 2 }}>
         <Container maxWidth="xl">
           {/* Stats Grid */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -118,7 +130,7 @@ const AdminDashboard = () => {
               },
               {
                 title: 'Customers',
-                value: '1,234',
+                value: customerCount,
                 icon: PeopleIcon,
                 trend: 8,
                 onClick: () => {
@@ -127,9 +139,12 @@ const AdminDashboard = () => {
               },
               {
                 title: 'Products',
-                value: '456',
+                value: productsCount,
                 icon: InventoryIcon,
                 trend: 5,
+                onClick: () => {
+                  navigate('/all-products');
+                },
               },
             ].map((stat) => (
               <Grid item xs={12} sm={6} md={3} key={stat.title}>
