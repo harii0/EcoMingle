@@ -1,7 +1,9 @@
+/* eslint-disable react/prop-types */
 // components/BreadCrumbs.js
-import { Breadcrumbs as MuiBreadCrumbs, Link, Typography } from '@mui/material';
+import { Breadcrumbs as MuiBreadCrumbs, Link } from '@mui/material';
 import { withRouting } from '../hooks/withRouting';
-import { LuDot } from 'react-icons/lu';
+
+import { useSelector } from 'react-redux';
 
 const BreadCrumbs = (props) => {
   const {
@@ -9,10 +11,12 @@ const BreadCrumbs = (props) => {
   } = props;
 
   const pathnames = location.pathname.split('/').filter((x) => x);
-
+  const { user } = useSelector((state) => state.auth);
+  const role = user?.data?.user?.role || user?.user.role;
   if (
     pathnames.includes('login') ||
     pathnames.includes('register') ||
+    pathnames.includes('vendor-register') ||
     pathnames.includes('forgetpassword') ||
     pathnames.includes('reset-password')
   ) {
@@ -32,12 +36,13 @@ const BreadCrumbs = (props) => {
     >
       {pathnames.length > 0 ? (
         <Link
+          component={'span'}
           color={'text.primary'}
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/dashboard')}
           fontSize={12}
           style={{ textDecoration: 'none', cursor: 'pointer' }}
         >
-          Dashboard
+          {role}
         </Link>
       ) : (
         <Link
