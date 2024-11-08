@@ -39,7 +39,7 @@ router.post('/orders/ratings/:pId', verifyJwt, rateProduct);
 
 //products
 router.get('/products/:id', getProductById);
-router.get('/category', verifyJwt, getProductsByCategory);
+router.get('/category', getProductsByCategory);
 router.put('/wishlist', verifyJwt, addToWishlist);
 router.get('/cart', verifyJwt, getUserCart);
 router.put('/cart', verifyJwt, addToCart);
