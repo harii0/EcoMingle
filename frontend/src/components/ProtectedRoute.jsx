@@ -12,13 +12,13 @@ const ProtectedRoute = ({ element: Component, requiredRoles, ...rest }) => {
   }
 
   // Get user role from state
-  const role = user?.data?.user?.role;
+  const role = user?.data?.user?.role || user?.user.role;
 
   // If role does not match requiredRole, redirect based on role
   if (requiredRoles && !requiredRoles.includes(role)) {
     if (role === 'admin') return <Navigate to="/admin" replace />;
     if (role === 'vendor') return <Navigate to="/vendor" replace />;
-    return <Navigate to="/" replace />; // Generic user dashboard
+    return <Navigate to="/dashboard" replace />; // Generic user dashboard
   }
 
   // If all checks pass, render the component
