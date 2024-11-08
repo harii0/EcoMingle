@@ -1,7 +1,10 @@
-import { useState, createContext, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-// import { getProducts } from '../../product/api.js';
-import { getProductsThunk } from '../../product/productSlice.js';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getProductByCategory,
+  getProductsThunk,
+} from '../../product/productSlice.js';
 import {
   Box,
   Card,
@@ -20,7 +23,6 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { IoIosArrowDown } from 'react-icons/io';
-import { useDispatch, useSelector } from 'react-redux';
 
 // Sample Data
 const Categories = [
@@ -34,46 +36,38 @@ const Categories = [
 const Colors = ['Red', 'Blue', 'Green', 'Black', 'White'];
 const Materials = ['Cotton', 'Leather', 'Plastic', 'Metal', 'Wood'];
 
-// Context to manage catalog state
-const CatalogContext = createContext();
-
-// Custom hook to manage catalog state
-const useCatalog = () => {
-  const context = useContext(CatalogContext);
-  if (!context)
-    throw new Error('useCatalog must be used within a CatalogProvider');
-  return context;
-};
-
 // Custom hook for products
 const useProducts = () => {
   const dispatch = useDispatch();
-  const { products } = useSelector((state) => state.product);
+  const { products, status } = useSelector((state) => state.product);
+  const [category, setCategory] = useState(null);
 
-  const fetchProducts = async () => {
-    dispatch(getProductsThunk());
+  const fetchProductsByCategory = (category) => {
+    dispatch(getProductByCategory(category));
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (category) {
+      fetchProductsByCategory(category);
+    } else {
+      dispatch(getProductsThunk());
+    }
+  }, [category, dispatch]);
 
-  return { products, refetch: fetchProducts };
+  return { products, status, setCategory };
 };
 
 // Sidebar for Filters
-const SideNav = () => {
-  const {
-    selectedCategories,
-    toggleCategory,
-    selectedColors,
-    toggleColor,
-    selectedMaterials,
-    toggleMaterial,
-    priceRange,
-    setPriceRange,
-  } = useCatalog();
-
+const SideNav = ({
+  selectedCategories,
+  toggleCategory,
+  selectedColors,
+  toggleColor,
+  selectedMaterials,
+  toggleMaterial,
+  priceRange,
+  setPriceRange,
+}) => {
   return (
     <Card
       elevation={2}
@@ -148,9 +142,7 @@ const SideNav = () => {
                   onChange={() => toggleColor(color)}
                   sx={{
                     color: color.toLowerCase(),
-                    '&.Mui-checked': {
-                      color: color.toLowerCase(),
-                    },
+                    '&.Mui-checked': { color: color.toLowerCase() },
                   }}
                 />
               }
@@ -189,14 +181,12 @@ const FilterSection = ({ title, children }) => (
   </Box>
 );
 
-const AppliedFilters = () => {
-  const {
-    selectedCategories,
-    selectedColors,
-    selectedMaterials,
-    handleDeleteFilter,
-  } = useCatalog();
-
+const AppliedFilters = ({
+  selectedCategories,
+  selectedColors,
+  selectedMaterials,
+  handleDeleteFilter,
+}) => {
   return (
     <Box sx={{ mb: 2 }}>
       <Typography variant="h6" fontWeight="medium" fontSize={16}>
@@ -235,9 +225,7 @@ const AppliedFilters = () => {
   );
 };
 
-const SortBy = () => {
-  const { sortBy, setSortBy } = useCatalog();
-
+const SortBy = ({ sortBy, setSortBy }) => {
   return (
     <FormControl sx={{ minWidth: 120 }} size="small">
       <Select
@@ -254,8 +242,7 @@ const SortBy = () => {
   );
 };
 
-const ProductGrid = () => {
-  const { products, loading, error } = useProducts();
+const ProductGrid = ({ products, loading, error }) => {
   const navigate = useNavigate();
 
   if (loading) return <CircularProgress />;
@@ -298,6 +285,16 @@ const Catalog = () => {
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [sortBy, setSortBy] = useState('price');
   const [priceRange, setPriceRange] = useState([0, 100]);
+  const { products, status, error, setCategory } = useProducts();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get('search');
+
+  useEffect(() => {
+    if (searchQuery) {
+      setCategory([searchQuery]);
+    }
+  }, [searchQuery, setCategory]);
 
   const toggleCategory = (category) => {
     setSelectedCategories((prev) =>
@@ -305,6 +302,7 @@ const Catalog = () => {
         ? prev.filter((item) => item !== category)
         : [...prev, category],
     );
+    setCategory(category);
   };
 
   const toggleColor = (color) => {
@@ -322,57 +320,43 @@ const Catalog = () => {
   };
 
   const handleDeleteFilter = (label, filterType) => {
-    switch (filterType) {
-      case 'category':
-        setSelectedCategories((prev) => prev.filter((item) => item !== label));
-        break;
-      case 'color':
-        setSelectedColors((prev) => prev.filter((item) => item !== label));
-        break;
-      case 'material':
-        setSelectedMaterials((prev) => prev.filter((item) => item !== label));
-        break;
-      default:
-        break;
-    }
-  };
-
-  const contextValue = {
-    selectedCategories,
-    toggleCategory,
-    selectedColors,
-    toggleColor,
-    selectedMaterials,
-    toggleMaterial,
-    sortBy,
-    setSortBy,
-    priceRange,
-    setPriceRange,
-    handleDeleteFilter,
+    if (filterType === 'category')
+      setSelectedCategories((prev) => prev.filter((item) => item !== label));
+    if (filterType === 'color')
+      setSelectedColors((prev) => prev.filter((item) => item !== label));
+    if (filterType === 'material')
+      setSelectedMaterials((prev) => prev.filter((item) => item !== label));
   };
 
   return (
-    <CatalogContext.Provider value={contextValue}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={3}>
-          <SideNav />
-        </Grid>
-        <Grid item xs={12} md={9}>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              mb: 2,
-            }}
-          >
-            <AppliedFilters />
-            <SortBy />
-          </Box>
-          <ProductGrid />
-        </Grid>
-      </Grid>
-    </CatalogContext.Provider>
+    <Box sx={{ display: 'flex', gap: 2 }}>
+      <SideNav
+        selectedCategories={selectedCategories}
+        toggleCategory={toggleCategory}
+        selectedColors={selectedColors}
+        toggleColor={toggleColor}
+        selectedMaterials={selectedMaterials}
+        toggleMaterial={toggleMaterial}
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+      />
+      <Box sx={{ width: '100%' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <AppliedFilters
+            selectedCategories={selectedCategories}
+            selectedColors={selectedColors}
+            selectedMaterials={selectedMaterials}
+            handleDeleteFilter={handleDeleteFilter}
+          />
+          <SortBy sortBy={sortBy} setSortBy={setSortBy} />
+        </Box>
+        <ProductGrid
+          products={products}
+          loading={status === 'loading'}
+          error={error}
+        />
+      </Box>
+    </Box>
   );
 };
 
