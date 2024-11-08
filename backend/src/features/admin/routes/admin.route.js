@@ -19,7 +19,7 @@ import {
 const router = Router();
 
 router.get('/users', verifyJwt, isAdmin, getAllUsers);
-router.get('/users/:userId', verifyJwt, isAdmin, getUser);
+router.get('/users/:id', verifyJwt, isAdmin, getUser);
 router.put('/users/:userId', verifyJwt, isAdmin, updateUser);
 router.delete('/users/:userId', verifyJwt, isAdmin, deleteUser);
 
