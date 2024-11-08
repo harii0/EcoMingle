@@ -9,6 +9,7 @@ import {
   getFromCart,
   updateQuantity,
   setCheckoutItems,
+  clearCart,
 } from '../cartSlice';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -187,11 +188,14 @@ const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
-
+  const { user } = useSelector((state) => state.auth);
+  const role = user?.data?.user?.role || user?.user.role;
   const cartTotal = useSelector(selectCartTotal);
   useEffect(() => {
-    if (cartItems?.length == 0) dispatch(getFromCart());
-  }, [dispatch, cartItems?.length]);
+    if (role === 'admin') {
+      dispatch(clearCart());
+    } else if (cartItems?.length == 0) dispatch(getFromCart());
+  }, [dispatch, cartItems?.length, role]);
 
   const handleRemoveItem = (productId) => {
     dispatch(removeFromCart(productId));
