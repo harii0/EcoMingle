@@ -18,8 +18,9 @@ export const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 export const getUser = asyncHandler(async (req, res) => {
-  const { uId } = req.params;
-  const user = await User.findById(uId);
+  const { id } = req.params;
+
+  const user = await User.findById(id);
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
