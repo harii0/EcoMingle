@@ -53,7 +53,7 @@ const ProductCarousel = ({ product }) => {
                   alt={`${product.productName} - View ${index + 1}`}
                   sx={{
                     display: 'block',
-                    height: 'auto',
+                    height: '360px',
                     width: '100%',
                     objectFit: 'cover',
                   }}
@@ -75,7 +75,7 @@ const ProductCarousel = ({ product }) => {
             className="embla-thumbs__container"
             sx={{
               display: 'flex',
-              justifyContent: 'center',
+              gap: '10px',
             }}
           >
             {product.ProductImage.map((image, index) => (
