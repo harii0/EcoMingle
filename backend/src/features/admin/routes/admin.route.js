@@ -27,9 +27,9 @@ router.delete('/users/:userId', verifyJwt, isAdmin, deleteUser);
 // - Get applied vendors
 router.get('/vendors/applications', verifyJwt, isAdmin, getAppliedVendors);
 // post approve vendor
-router.post('/vendors/applications/:vId', verifyJwt, isAdmin, approveVendor);
+router.post('/vendors/approve/:id', verifyJwt, isAdmin, approveVendor);
 // post reject vendor
-router.post('/vendors/applications/:vId', verifyJwt, isAdmin, rejectVendor);
+router.post('/vendors/reject/:id', verifyJwt, isAdmin, rejectVendor);
 
 router.get('/vendors', verifyJwt, isAdmin, getVendors);
 router.get('/vendors/:vId', verifyJwt, isAdmin, getVendorById);
