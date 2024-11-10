@@ -263,9 +263,7 @@ export default function PrimarySearchAppBar() {
               }}
             >
               <>
-                {notAllowed ? (
-                  <div></div>
-                ) : (
+                {!role ? (
                   <IconButton
                     size="small"
                     edge="end"
@@ -279,6 +277,8 @@ export default function PrimarySearchAppBar() {
                     <CiShop />
                     <Typography fontSize={12}> Become a seller</Typography>
                   </IconButton>
+                ) : (
+                  <div></div>
                 )}
                 {notAllowed ? (
                   <div></div>
