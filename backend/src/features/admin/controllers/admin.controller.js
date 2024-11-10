@@ -65,8 +65,8 @@ export const getAppliedVendors = asyncHandler(async (req, res) => {
 });
 // post approve vendor
 export const approveVendor = asyncHandler(async (req, res) => {
-  const { vId } = req.body;
-  const vendor = await Vendor.findByIdAndUpdate(vId, { status: 'approved' });
+  const { id } = req.params;
+  const vendor = await Vendor.findByIdAndUpdate(id, { status: 'approved' });
   if (!vendor) {
     throw new ApiError(400, 'no vendors found');
   }
@@ -74,8 +74,8 @@ export const approveVendor = asyncHandler(async (req, res) => {
 });
 // post reject vendor
 export const rejectVendor = asyncHandler(async (req, res) => {
-  const { vId } = req.body;
-  const vendor = await Vendor.findByIdAndUpdate(vId, { status: 'rejected' });
+  const { id } = req.params;
+  const vendor = await Vendor.findByIdAndUpdate(id, { status: 'rejected' });
   if (!vendor) {
     throw new ApiError(400, 'no vendors found');
   }
