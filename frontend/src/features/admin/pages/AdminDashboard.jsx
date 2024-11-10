@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerCount, getProductsCount } from '../adminSlice';
+import VendorApplication from './vendor/VendorApplication';
 
 const mockOrders = [
   {
@@ -222,6 +223,7 @@ const AdminDashboard = () => {
               </Table>
             </TableContainer>
           </Paper>
+          <VendorApplication />
         </Container>
       </Box>
     </Box>
