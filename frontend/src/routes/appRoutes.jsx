@@ -21,6 +21,7 @@ import UserPage from '../features/admin/pages/UserPage';
 import ProductList from '../features/admin/pages/ProductList';
 import ProductListPage from '../features/admin/pages/ProductListPage';
 import VendorRegister from '../features/auth/pages/VendorRegister';
+import Vendor from '../features/admin/pages/vendor/Vendor';
 
 const AppRoutes = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -111,6 +112,10 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute requiredRoles={['admin']} element={ProductListPage} />
         }
+      />
+      <Route
+        path="/vendors/:id"
+        element={<ProtectedRoute requiredRoles={['admin']} element={Vendor} />}
       />
     </Routes>
   );
