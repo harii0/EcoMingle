@@ -11,7 +11,7 @@ import {
   Snackbar,
 } from '@mui/material';
 import { Add, Remove, Star } from '@mui/icons-material';
-import { LuShare2 } from 'react-icons/lu';
+import { LuHeart, LuShare2 } from 'react-icons/lu';
 import { BiColorFill } from 'react-icons/bi';
 import { IoClose } from 'react-icons/io5';
 
@@ -233,7 +233,12 @@ const ProductPage = () => {
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Chip icon={<Star fontSize="small" />} label={'4.2 — 54 Reviews'} />
+            <Chip
+              sx={{ fontSize: '11px', backgroundColor: '#F6F6F6' }}
+              size="small"
+              icon={<Star fontSize="small" />}
+              label={'4.2 — 54 Reviews'}
+            />
 
             {product.productItems[0].inventoryCount <= 0 ? (
               <Chip
@@ -241,14 +246,18 @@ const ProductPage = () => {
                 label="OUT OF STOCK"
                 color="error"
                 size="small"
-                sx={{ ml: 2, borderRadius: '50px', fontSize: '12px' }}
+                sx={{ ml: 2, borderRadius: '50px', fontSize: '10px' }}
               />
             ) : (
               <Chip
                 variant="outlined"
                 label="IN STOCK"
                 size="small"
-                sx={{ ml: 2, borderRadius: '50px', fontSize: '12px' }}
+                sx={{
+                  ml: 2,
+                  borderRadius: '50px',
+                  fontSize: '10px',
+                }}
               />
             )}
           </Box>
@@ -256,7 +265,12 @@ const ProductPage = () => {
           <Typography variant="h6" gutterBottom>
             ${product.price}
           </Typography>
-          <Typography variant="subtitle1" fontSize={12} gutterBottom>
+          <Typography
+            color={'#5C5F6A'}
+            variant="subtitle1"
+            fontSize={12}
+            gutterBottom
+          >
             AVAILABLE COLORS
           </Typography>
           <Box sx={{ mb: 2 }}>
@@ -275,7 +289,12 @@ const ProductPage = () => {
               />
             ))}
           </Box>
-          <Typography variant="subtitle1" fontSize={12} gutterBottom>
+          <Typography
+            color={'#5C5F6A'}
+            variant="subtitle1"
+            fontSize={12}
+            gutterBottom
+          >
             MATERIAL
           </Typography>
           <Box sx={{ mb: 2 }}>
@@ -299,7 +318,14 @@ const ProductPage = () => {
                 key={size}
                 variant="outlined"
                 size="small"
-                sx={{ mr: 1, minWidth: 'auto' }}
+                disableRipple
+                sx={{
+                  mr: 1,
+                  minWidth: 'auto',
+                  border: '1px solid #E6E7E8',
+                  color: '#5C5F6A',
+                  '&:hover': { border: '1.3px solid black', color: 'black' },
+                }}
               >
                 {size}
               </Button>
@@ -345,20 +371,28 @@ const ProductPage = () => {
               </IconButton>
             </Box>
           </Box>
-          <Button
-            onClick={handleAddToCart}
-            variant="contained"
-            disableElevation
-            fullWidth
-            sx={{
-              mb: 2,
-              backgroundColor: 'primary.main',
-              fontWeight: '500',
-              '&:hover': { backgroundColor: '#45a049' },
-            }}
-          >
-            Add to cart
-          </Button>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              onClick={handleAddToCart}
+              variant="contained"
+              disableElevation
+              sx={{
+                width: '70%',
+                mb: 2,
+                backgroundColor: 'primary.main',
+                fontWeight: '500',
+                '&:hover': { backgroundColor: '#45a049' },
+              }}
+            >
+              Add to cart
+            </Button>
+            <Button
+              sx={{ mb: 2, padding: 0, border: '1px solid #E6E7E8' }}
+              variant="outlined"
+            >
+              <LuHeart size={20} />
+            </Button>
+          </Box>
           <Box
             sx={{
               display: 'flex',
@@ -366,7 +400,7 @@ const ProductPage = () => {
               alignItems: 'center',
             }}
           >
-            <Typography variant="body2">
+            <Typography variant="body2" fontSize={12}>
               — FREE SHIPPING ON ORDERS $100+
             </Typography>
           </Box>
