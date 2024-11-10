@@ -15,3 +15,18 @@ export const getAllProducts = async () => {
 export const getProductById = async (id) => {
   return await api.get(`/admin/products/${id}`);
 };
+
+export const getVendorApplication = async () => {
+  return await api.get('/admin/vendors/applications');
+};
+
+export const getVendorById = async (id) => {
+  return await api.get(`/admin/vendors/${id}`);
+};
+
+export const approveVendor = async (id) => {
+  return await api.post(`/admin/vendors/approve/${id}`);
+};
+export const rejectVendor = async (id) => {
+  return await api.post(`/admin/vendors/reject/${id}`);
+};
