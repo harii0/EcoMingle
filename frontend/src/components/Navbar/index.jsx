@@ -50,8 +50,7 @@ export default function PrimarySearchAppBar() {
     setCartCount(items?.length);
   }, [items]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     let searchQuery = search.trim();
     navigate(`/catalog?search=${searchQuery}`);
   };
@@ -207,6 +206,14 @@ export default function PrimarySearchAppBar() {
                   placeholder="Search…"
                   inputProps={{ 'aria-label': 'search' }}
                   onChange={(e) => setSearch(e.target.value.trim())}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      console.log(e.key);
+
+                      handleSubmit();
+                    }
+                  }}
                 />
                 <IconButton
                   disabled={search === ''}
@@ -236,7 +243,9 @@ export default function PrimarySearchAppBar() {
                       backgroundColor: '#e0e0e0',
                     },
                   }}
-                  onClick={handleSubmit}
+                  onClick={(e) => {
+                    handleSubmit(e);
+                  }}
                 >
                   <LuSearch color="white" fontSize={18} strokeWidth={1.5} />
                 </IconButton>
