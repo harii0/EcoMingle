@@ -18,12 +18,10 @@ import {
   LuMapPin,
   LuShoppingCart,
   LuHeart,
-  LuLogOut,
   LuKey,
 } from 'react-icons/lu';
 import { getOrders, getProfile } from '../api/profileApi.js';
 import EmissionCard from '../../../components/EmissionCard';
-import { getWishlist } from '../api/wishlistApi.js';
 import { useTheme } from '@mui/styles';
 
 // Custom TabPanel component
@@ -39,7 +37,6 @@ const Profile = () => {
   const theme = useTheme();
   const [profile, setProfile] = useState(null);
   const [orders, setOrders] = useState(null);
-  const [wishlist, setWhishlist] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -77,15 +74,6 @@ const Profile = () => {
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
-  };
-
-  const whishlistHandler = async () => {
-    try {
-      const response = await getWishlist();
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -137,18 +125,6 @@ const Profile = () => {
                 disableRipple
                 label={isSmallScreen ? '' : 'Orders'}
                 icon={<LuShoppingCart size={22} />}
-                iconPosition="start"
-                sx={{
-                  justifyContent: isSmallScreen ? 'center' : 'start',
-                  fontWeight: 'medium',
-                  gap: '5px',
-                }}
-              />
-              <Tab
-                onClick={whishlistHandler}
-                disableRipple
-                label={isSmallScreen ? '' : 'Whishlist'}
-                icon={<LuHeart size={22} />}
                 iconPosition="start"
                 sx={{
                   justifyContent: isSmallScreen ? 'center' : 'start',
@@ -243,16 +219,11 @@ const Profile = () => {
           </TabPanel>
 
           <TabPanel value={value} index={2}>
-            <Typography variant="h6">Wishlist</Typography>
-            {/* Wishlist content */}
-          </TabPanel>
-
-          <TabPanel value={value} index={3}>
             <Typography variant="h6">Address</Typography>
             {/* Address content */}
           </TabPanel>
 
-          <TabPanel value={value} index={4}>
+          <TabPanel value={value} index={3}>
             <Typography variant="h6">Password</Typography>
             <Grid container spacing={2}>
               <Grid item xs={12}>
