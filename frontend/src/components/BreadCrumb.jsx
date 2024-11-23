@@ -18,7 +18,8 @@ const BreadCrumbs = (props) => {
     pathnames.includes('register') ||
     pathnames.includes('vendor-register') ||
     pathnames.includes('forgetpassword') ||
-    pathnames.includes('reset-password')
+    pathnames.includes('reset-password') ||
+    pathnames.includes('vendor-login')
   ) {
     pathnames.splice(0, 1);
   }
