@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { vendorRegister } from '../api';
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme({
   palette: {
@@ -41,6 +42,7 @@ const theme = createTheme({
 });
 
 const VendorRegister = () => {
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -311,6 +313,13 @@ const VendorRegister = () => {
             <Grid item xs={12} display="flex" justifyContent="center">
               <Button type="submit" variant="contained" color="primary">
                 Register
+              </Button>
+              <Button
+                onClick={() => navigate('/vendor-login')}
+                variant="contained"
+                color="primary"
+              >
+                Login
               </Button>
             </Grid>
           </Grid>
