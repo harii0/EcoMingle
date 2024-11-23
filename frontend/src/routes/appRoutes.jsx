@@ -22,6 +22,7 @@ import ProductList from '../features/admin/pages/ProductList';
 import ProductListPage from '../features/admin/pages/ProductListPage';
 import VendorRegister from '../features/auth/pages/VendorRegister';
 import Vendor from '../features/admin/pages/vendor/Vendor';
+import VendorLogin from '../features/auth/pages/vendorLogin';
 
 const AppRoutes = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -47,6 +48,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/vendor-register" element={<VendorRegister />} />
+      <Route path="/vendor-login" element={<VendorLogin />} />
       <Route path="/forgetpassword" element={<ForgetPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
