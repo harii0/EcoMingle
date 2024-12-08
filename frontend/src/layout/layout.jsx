@@ -19,7 +19,7 @@ const Layout = ({ children }) => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          py: 7,
+          py: 5,
         }}
       >
         <BreadCrumbs />

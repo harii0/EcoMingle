@@ -30,7 +30,7 @@ const BreadCrumbs = (props) => {
       separator={'>'}
       sx={{
         width: '100%',
-        py: 1,
+        pt: 3,
         px: 3,
         backgroundColor: '#ffffff',
       }}
