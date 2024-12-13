@@ -15,3 +15,7 @@ export const vendorLogin = async (data) => {
 export const getProfile = async (vId) => {
   return await api.get(`/vendor/profile/${vId}`);
 };
+
+export const getProducts = async (vId) => {
+  return await api.get(`/vendor/products/${vId}`);
+};
