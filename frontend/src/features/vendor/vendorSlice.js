@@ -4,6 +4,7 @@ import { vendorLogin, vendorRegister } from './api/api';
 
 const initialState = {
   vendor: TokenService.getUser('vendor') || null,
+  isAuth: false,
 };
 
 export const registerVendor = createAsyncThunk(
@@ -22,12 +23,9 @@ export const loginVendor = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await vendorLogin(data);
-      console.log(response);
       TokenService.setVendor(response?.data);
       return response.data;
     } catch (error) {
-      console.log(error);
-
       return rejectWithValue(error.response.data);
     }
   },
@@ -37,6 +35,12 @@ const vendorSlice = createSlice({
   name: 'vendor',
   initialState,
   reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(loginVendor.fulfilled, (state, action) => {
+      state.isAuth = true;
+      state.vendor = action.payload?.data;
+    });
+  },
 });
 
 export default vendorSlice;
