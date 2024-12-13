@@ -2,8 +2,10 @@ import { Box, Typography, Grid, Paper, Button } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import GroupIcon from '@mui/icons-material/Group';
+import { useNavigate } from 'react-router-dom';
 
 const VendorDashboard = () => {
+  const navigate = useNavigate();
   return (
     <Box>
       {/* Top App Bar */}
@@ -33,6 +35,19 @@ const VendorDashboard = () => {
               <Typography variant="h6">Revenue</Typography>
               <Typography variant="h4" sx={{ color: 'text.secondary' }}>
                 $7,980
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper
+              elevation={3}
+              sx={{ padding: 2, textAlign: 'center' }}
+              onClick={() => navigate('/products')}
+            >
+              <TrendingUpIcon sx={{ fontSize: 50, color: 'info.main' }} />
+              <Typography variant="h6">Products</Typography>
+              <Typography variant="h4" sx={{ color: 'text.secondary' }}>
+                10
               </Typography>
             </Paper>
           </Grid>
