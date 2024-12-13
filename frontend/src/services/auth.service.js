@@ -5,6 +5,9 @@ class TokenService {
   setUser = (user) => {
     localStorage.setItem('user', JSON.stringify(user));
   };
+  setVendor = (vendor) => {
+    localStorage.setItem('vendor', JSON.stringify(vendor));
+  };
   removeUser = (user) => {
     localStorage.removeItem(user);
   };
