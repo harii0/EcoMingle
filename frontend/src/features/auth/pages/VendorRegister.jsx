@@ -11,8 +11,9 @@ import {
   ThemeProvider,
 } from '@mui/material';
 import { useState } from 'react';
-import { vendorRegister } from '../api';
+import { registerVendor } from '../../vendor/vendorSlice.js';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 const theme = createTheme({
   palette: {
@@ -43,6 +44,7 @@ const theme = createTheme({
 
 const VendorRegister = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const {
     control,
     handleSubmit,
@@ -68,7 +70,7 @@ const VendorRegister = () => {
   };
 
   const onSubmit = async (data) => {
-    const res = await vendorRegister(data);
+    dispatch(registerVendor(data));
   };
 
   return (
