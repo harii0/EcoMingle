@@ -24,9 +24,3 @@ export const resetPassword = async (data, token) => {
     skipInterceptor: true,
   });
 };
-
-export const vendorRegister = async (data) => {
-  return await api.post(`/vendor/register`, data, {
-    skipInterceptor: true,
-  });
-};
