@@ -26,6 +26,7 @@ import {
   getVendor,
   updateVendor,
   deleteVendor,
+  getVendorProducts,
 } from '../controllers/vendor.controller.js';
 
 import { uploadFile } from '../../../middleware/uploadFile.js';
@@ -63,7 +64,8 @@ router.delete('/products/:pId', verifyJwt, isVendor, deleteProduct);
 router.get('/products', getAllProducts);
 
 //product items
-router.post('/create-item', verifyJwt, isVendor, createProductItem); //not admin its vendor
+router.post('/create-item', verifyJwt, isVendor, createProductItem);
+router.get('/products/:vId', verifyJwt, isVendor, getVendorProducts);
 router.patch('/update-item/:pId', verifyJwt, isVendor, updateProductItem);
 router.delete('/delete-item/:pId', verifyJwt, isVendor, deleteProductItem);
 
