@@ -1,19 +1,30 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Box, TextField, Button, Typography } from '@mui/material';
+import { loginVendor } from '../../vendor/vendorSlice.js';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const VendorLogin = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuth } = useSelector((state) => state.vendor);
+  console.log(isAuth);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log('Login Data: ', data);
-    alert('Login successful!');
+  const onSubmit = async (data) => {
+    dispatch(loginVendor(data));
   };
-
+  useEffect(() => {
+    if (isAuth) {
+      navigate('/vendor-dashboard', { replace: true });
+    }
+  }, [isAuth]);
   return (
     <Box
       sx={{
