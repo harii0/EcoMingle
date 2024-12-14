@@ -36,7 +36,7 @@ const router = Router();
 router.post('/register', uploadFile.single('file'), createVendor);
 router.post('/login', vendorLogin);
 //profile
-router.get('/profile/:vId', getVendor);
+router.get('/profile/:vId', verifyJwt, getVendor);
 router.patch('/profile/:vId', verifyJwt, isVendor, updateVendor);
 router.delete('/profile/:vId', verifyJwt, isVendor, deleteVendor);
 
@@ -60,8 +60,6 @@ router.patch(
 );
 
 router.delete('/products/:pId', verifyJwt, isVendor, deleteProduct);
-
-router.get('/products', getAllProducts);
 
 //product items
 router.post('/create-item', verifyJwt, isVendor, createProductItem);
