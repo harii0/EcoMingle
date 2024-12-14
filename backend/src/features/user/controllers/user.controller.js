@@ -13,6 +13,7 @@ import bcrypt from 'bcrypt';
 import Order from '../../order/models/order.model.js';
 import UserReview from '../../review/models/review.model.js';
 import userSchema from '../../../validators/userSchema.js';
+import Vendor from '../../vendor/models/vendor.model.js';
 
 //create user
 const registerUser = asyncHandler(async (req, res) => {
@@ -147,28 +148,29 @@ const refreshToken = asyncHandler(async (req, res) => {
 
   try {
     let payload = jwt.verify(userRefreshToken, process.env.JWT_REFRESH_TOKEN);
-    const user = await User.findById(payload.id);
-    if (!user) {
-      throw new ApiError(404, 'User not found');
+    let userOrVendor = null;
+    userOrVendor = await User.findById(payload.id);
+    if (!userOrVendor) {
+      userOrVendor = await Vendor.findById(payload.id);
     }
-    if (user?.refreshToken !== userRefreshToken) {
+    if (userOrVendor?.refreshToken !== userRefreshToken) {
       throw new ApiError(401, 'Invalid refresh token or token mismatch');
     }
-    const accessToken = user.generateAccessToken();
+    const accessToken = userOrVendor.generateAccessToken();
     const options = {
       httpOnly: true,
       secure: true,
       maxAge: 15 * 60 * 1000,
     };
-    const refreshToken = user.generateRefreshToken();
+    const refreshToken = userOrVendor.generateRefreshToken();
     const refreshOptions = {
       httpOnly: true,
       secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
       // path: '/refresh_token',
     };
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
+    userOrVendor.refreshToken = refreshToken;
+    await userOrVendor.save({ validateBeforeSave: false });
     return res
       .status(200)
       .cookie('accessToken', accessToken, options)
