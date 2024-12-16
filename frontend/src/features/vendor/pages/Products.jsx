@@ -1,26 +1,22 @@
 import { useState, useEffect } from 'react';
 import { getProducts } from '../api/api.js';
 import { useSelector } from 'react-redux';
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Grid,
-  Typography,
-  Box,
-  CircularProgress,
-} from '@mui/material';
-
+import ProductList from '../components/ProductList.jsx';
+import { Typography, Box, CircularProgress } from '@mui/material';
+import { SearchAndFilter } from '../components/SearchAndFilter.jsx';
+import SearchInput from '../components/SearchInput';
+import FilterDropdown from '../components/FilterDropdown.jsx';
 const Products = () => {
   const { vendor } = useSelector((state) => state.vendor);
   const vId = vendor?.data?._id;
 
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true);
         const response = await getProducts(vId);
         setProducts(response.data.data.products);
       } catch (error) {
@@ -34,7 +30,6 @@ const Products = () => {
       fetchProducts();
     }
   }, [vId]);
-  console.log(products);
 
   if (loading) {
     return (
@@ -54,48 +49,13 @@ const Products = () => {
       <Typography variant="h4" gutterBottom>
         Products
       </Typography>
-      {products && products.length > 0 ? (
-        <Grid container spacing={2}>
-          {products.map((product) => (
-            <Grid item xs={12} sm={6} md={4} key={product._id}>
-              <Card
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: '100%',
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  alt={product.productName}
-                  height="200"
-                  image={product.ProductImage[0]} // Displaying the first image
-                  sx={{ objectFit: 'contain' }}
-                />
-                <CardContent>
-                  <Typography variant="h6" component="div">
-                    {product.productName}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {product.description}
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    color="primary"
-                    sx={{ marginTop: 2 }}
-                  >
-                    ${product.price}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      ) : (
-        <Typography variant="body1" color="text.secondary">
-          No products found.
-        </Typography>
-      )}
+      <SearchAndFilter products={products}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <SearchInput />
+          <FilterDropdown />
+        </Box>
+        <ProductList />
+      </SearchAndFilter>
     </Box>
   );
 };
