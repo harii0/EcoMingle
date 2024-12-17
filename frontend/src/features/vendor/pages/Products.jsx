@@ -21,6 +21,7 @@ const Products = () => {
         setProducts(response.data.data.products);
       } catch (error) {
         console.log(error);
+        setLoading(false);
       } finally {
         setLoading(false);
       }
