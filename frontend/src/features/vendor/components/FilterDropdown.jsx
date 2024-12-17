@@ -14,7 +14,7 @@ const FilterDropdown = () => {
           onChange={(e) => setMenu(e.target.value)}
         >
           <MenuItem value={'active'}>Active</MenuItem>
-          <MenuItem value={'disabled'}>disabled</MenuItem>
+          <MenuItem value={'draft'}>Draft</MenuItem>
         </Select>
       </FormControl>
     </div>
