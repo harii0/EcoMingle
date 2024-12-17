@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import TokenService from '../../services/auth.service';
-import { vendorLogin, vendorRegister } from './api/api';
+import { addNewProduct, vendorLogin, vendorRegister } from './api/api';
 
 const initialState = {
   vendor: TokenService.getUser('vendor') || null,
@@ -30,7 +30,17 @@ export const loginVendor = createAsyncThunk(
     }
   },
 );
-
+export const addProduct = createAsyncThunk(
+  'vendor/addProduct',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await addNewProduct(data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
 const vendorSlice = createSlice({
   name: 'vendor',
   initialState,
