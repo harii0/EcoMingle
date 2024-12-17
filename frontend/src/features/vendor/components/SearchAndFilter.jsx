@@ -7,13 +7,21 @@ const SearchAndFilter = ({ products, children }) => {
   const [menu, setMenu] = useState('active');
 
   const filteredProducts = products?.filter((product) => {
-    return (
-      (searchTerm === '' ||
-        product.productName
-          ?.toLowerCase()
-          .includes(searchTerm?.toLowerCase())) &&
-      (menu === '' || product.status === menu)
-    );
+    if (!product) return false;
+
+    const normalizedSearchTerm = searchTerm || '';
+    const normalizedMenu = menu || '';
+
+    const matchesSearchTerm =
+      normalizedSearchTerm === '' ||
+      product.productName
+        ?.toLowerCase()
+        .includes(normalizedSearchTerm.toLowerCase());
+
+    const matchesMenu =
+      normalizedMenu === '' || product.status === normalizedMenu;
+
+    return matchesSearchTerm && matchesMenu;
   });
 
   const value = {
