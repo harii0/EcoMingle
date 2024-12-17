@@ -19,3 +19,7 @@ export const getProfile = async (vId) => {
 export const getProducts = async (vId) => {
   return await api.get(`/vendor/products/${vId}`);
 };
+
+export const addNewProduct = async (data) => {
+  return await api.post(`/vendor/add-product`, data);
+};
