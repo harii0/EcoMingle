@@ -44,7 +44,7 @@ router.delete('/profile/:vId', verifyJwt, isVendor, deleteVendor);
 
 //product Management
 router.post(
-  '/:vId/products',
+  '/add-product',
   verifyJwt,
   isVendor,
   upload.array('ProductImage', 3),
