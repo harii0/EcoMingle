@@ -21,5 +21,9 @@ export const getProducts = async (vId) => {
 };
 
 export const addNewProduct = async (data) => {
-  return await api.post(`/vendor/add-product`, data);
+  return await api.post(`/vendor/add-product`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 };
