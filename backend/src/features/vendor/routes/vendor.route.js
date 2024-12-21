@@ -47,7 +47,14 @@ router.post(
   '/add-product',
   verifyJwt,
   isVendor,
-  upload.array('ProductImage', 3),
+  (req, res, next) => {
+    upload.array('ProductImage[]', 3)(req, res, (err) => {
+      if (err) {
+        throw new Error('multer error');
+      }
+      next();
+    });
+  },
   createProduct,
 );
 
