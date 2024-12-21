@@ -3,9 +3,35 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import GroupIcon from '@mui/icons-material/Group';
 import { useNavigate } from 'react-router-dom';
-
+import DialogBox from '../components/DialogBox';
+import { useState } from 'react';
+import { addNewProduct } from '../api/api';
 const VendorDashboard = () => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
+  const fields = [
+    { name: 'productName', label: 'Product Name', required: true },
+    { name: 'price', label: 'Price', type: 'number', required: true },
+    { name: 'description', label: 'Description', multiline: true, rows: 4 },
+    {
+      name: 'category',
+      label: 'Category',
+      select: true,
+      required: true,
+      options: ['Electronics', 'Fashion', 'Home Appliances'],
+    },
+  ];
+  const handleAddProduct = async (data) => {
+    try {
+      console.log(data);
+
+      const response = await addNewProduct(data);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Box>
       {/* Top App Bar */}
@@ -56,7 +82,7 @@ const VendorDashboard = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Paper elevation={3} sx={{ padding: 2, textAlign: 'center' }}>
               <GroupIcon sx={{ fontSize: 50, color: 'warning.main' }} />
-              <Typography variant="h6">Customers</Typography>
+              <Typography variant="h6">Orders</Typography>
               <Typography variant="h4" sx={{ color: 'text.secondary' }}>
                 1,245
               </Typography>
@@ -72,12 +98,20 @@ const VendorDashboard = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6} md={3}>
               <Button
+                onClick={() => setOpen(true)}
                 fullWidth
                 variant="contained"
-                sx={{ backgroundColor: 'secondary.main', color: 'white' }}
+                sx={{ backgroundColor: 'primary.main', color: 'white' }}
               >
                 Add Product
               </Button>
+              <DialogBox
+                open={open}
+                onClose={() => setOpen(false)}
+                onSubmit={handleAddProduct}
+                fields={fields}
+                defaultValues={{ productName: '', price: '', description: '' }}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <Button
